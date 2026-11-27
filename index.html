@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Noah Choi | Industrial Machine Vision Software Engineer</title>
+<meta name="description" content="OpenVisionLab: open-source C#/.NET tools for 2D/3D inspection, labeling, and debugging.">
+<meta name="theme-color" content="#f5f7f7">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<script>
+(function(){var d=document.documentElement,q=new URLSearchParams(location.search),s;d.classList.add('js');
+if(q.has('pp'))d.classList.add('pp');
+try{s=localStorage;s.getItem('motion')}catch(e){s={getItem:function(){return null}}}
+var m=s.getItem('motion');
+if(q.has('shot')||q.has('lint')||m==='off'||(m!=='on'&&matchMedia('(prefers-reduced-motion: reduce)').matches))d.classList.add('still');
+var t=q.get('theme')||s.getItem('theme');d.dataset.theme=t==='dark'?'dark':'light';
+var l=q.get('lang')||s.getItem('lang');d.lang=l==='ko'?'ko':'en';})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main" data-ko="본문으로 건너뛰기" data-ko-src="tr">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <nav class="pill" aria-label="Primary">
+    <a class="brand" href="#top">Noah Choi</a>
+    <ul class="links" id="menu">
+      <li><a href="#about" data-ko="소개" data-ko-src="tr">About</a></li>
+      <li><a href="#projects" data-ko="프로젝트" data-ko-src="tr">Projects</a></li>
+      <li><a href="#ecosystem" data-ko="구성도" data-ko-src="tr" data-ed>Overview</a></li>
+      <li><a href="#skills" data-ko="기술" data-ko-src="tr">Skills</a></li>
+      <li><a href="#principles" data-ko="원칙" data-ko-src="tr">Principles</a></li>
+      <li><a href="#releases" data-ko="릴리스" data-ko-src="tr">Releases</a></li>
+      <li><a href="#contact" data-ko="연락처" data-ko-src="tr">Contact</a></li>
+    </ul>
+    <div class="tools">
+      <div class="seg" role="group" data-aria="lang"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="ko" aria-pressed="false">KO</button></div>
+      <button type="button" class="ib" id="theme" aria-pressed="false" data-aria="theme">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+      </button>
+      <button type="button" class="ib" id="motion" aria-pressed="false" data-aria="motion">
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button type="button" class="ib burger" id="burger" aria-expanded="false" aria-controls="menu" data-aria="menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+<section id="top" class="hero" aria-labelledby="hero-h">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-in">
+    <p class="hello reveal" style="--rd:80ms" data-ko="안녕하세요," data-ko-src="tr">Hello, I'm</p>
+    <h1 id="hero-h" class="name"><span class="w"><span style="--rd:160ms">Noah</span></span> <span class="w"><span style="--rd:280ms">Choi</span></span></h1>
+    <div class="idl reveal" style="--rd:520ms">
+      <p class="kname" lang="ko">최노아</p>
+      <p class="role" data-ko="산업용 머신비전 소프트웨어 엔지니어" data-ko-src="tr">Industrial Machine Vision Software Engineer</p>
+    </div>
+    <p class="tag reveal" style="--rd:640ms" data-ko="실물 장비가 준비되기 전에 머신비전 개발을 위한 오픈소스 도구를 만듭니다." data-ko-src="tr">Building open-source tools for machine-vision development before the physical machine is ready.</p>
+    <p class="bio reveal" style="--rd:740ms" data-ko="OpenVisionLab: 2D/3D 검사, 라벨링, 디버깅용 오픈소스 C#/.NET 도구." data-ko-src="tr" data-ed>OpenVisionLab: open-source C#/.NET tools for 2D/3D inspection, labeling, and debugging.</p>
+    <p class="btns reveal" style="--rd:860ms">
+      <a class="btn pri" href="https://github.com/Noah8218" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+      <a class="btn" href="mailto:dhqtlzm12@naver.com"><span data-ko="이메일" data-ko-src="tr">Email</span></a>
+      <a class="btn" href="https://marketplace.visualstudio.com/items?itemName=openvisionlab.RawBufferVisualizer" target="_blank" rel="noopener"><span>Visual Studio Marketplace</span> <span class="bsub">Raw Buffer Visualizer</span> <span aria-hidden="true">↗</span></a>
+    </p>
+  </div>
+  <a class="cue" href="#about"><span data-ko="스크롤" data-ko-src="tr">Scroll</span><i aria-hidden="true"></i></a>
+</section>
+
+<section id="about" class="sec" aria-labelledby="about-h">
+  <div class="wrap">
+    <header class="sh reveal"><h2 id="about-h" class="ttl"><span class="u" data-ko="소개" data-ko-src="tr">About</span></h2></header>
+    <blockquote class="pull reveal"><p><span data-ko="장비와 샘플이 준비된 뒤에야 소프트웨어 개발을 시작하면, " data-ko-src="tr" data-ed>If software development only starts once the machine and samples are ready, </span><mark class="hl" data-ko="검증과 그 위험이 일정 막바지에 몰립니다" data-ko-src="tr" data-ed>validation and its risk end up at the end of the schedule</mark>.</p></blockquote>
+    <div class="about-grid">
+      <div class="copy" data-stagger>
+        <p class="reveal" data-ko="저는 반도체, 디스플레이, 배터리, 자동차 제조 분야에서 20개 이상의 장비 프로젝트를 8년간 수행한 산업용 머신비전 소프트웨어 엔지니어입니다." data-ko-src="tr">I am an industrial machine-vision software engineer with 8 years of experience across 20+ equipment projects in semiconductor, display, battery, and automotive manufacturing.</p>
+        <p class="reveal" data-ko="OpenVisionLab은 C# 머신비전 개발자를 위한 제 개인 오픈소스 R&amp;D 프로젝트입니다." data-ko-src="tr" data-ed>OpenVisionLab is my personal open-source R&amp;D project for C# machine-vision developers.</p>
+      </div>
+      <div class="stats" data-stagger>
+        <div class="stat reveal"><p class="num"><span data-count>8</span></p><p class="lbl" data-ko="년 경력" data-ko-src="tr">years of experience</p></div>
+        <div class="stat reveal"><p class="num"><span data-count>20+</span></p><p class="lbl" data-ko="장비 프로젝트" data-ko-src="tr">equipment projects</p></div>
+        <div class="stat reveal"><p class="num"><span data-count>6</span></p><p class="lbl" data-ko="오픈소스 프로젝트" data-ko-src="tr">open-source projects</p></div>
+        <div class="stat reveal"><p class="num"><span data-count>41</span></p><p class="lbl" data-ko="GitHub 스타" data-ko-src="tr">GitHub stars</p>
+          <p class="sub2"><span data-count>90</span> <span data-ko="팔로워" data-ko-src="tr">followers</span></p>
+          <p class="asof"><span data-ko="기준일" data-ko-src="tr">as of</span> <time datetime="2026-11-27">2026-11-27</time></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="sec" aria-labelledby="projects-h">
+  <div class="wrap">
+    <header class="sh reveal"><h2 id="projects-h" class="ttl"><span class="u" data-ko="프로젝트" data-ko-src="tr">Projects</span></h2>
+      <p class="meta"><span data-ko="GitHub 스타 기준일" data-ko-src="tr">GitHub stars as of</span> <time datetime="2026-11-27">2026-11-27</time></p></header>
+
+    <article class="row" aria-labelledby="t-ovl">
+      <div class="hd reveal">
+        <p class="no">01</p>
+        <h3 id="t-ovl">2D Workbench</h3>
+        <p class="desc" data-ko="Windows에서 OpenCvSharp 4와 C#으로 규칙 기반 2D 검사 Recipe를 구성하고 검증하는 도구입니다.">Build and validate rule-based 2D inspection Recipes on Windows with OpenCvSharp 4 and C#.</p>
+      </div>
+      <div class="vw reveal" data-vw style="--ar:16/9">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="stage">
+            <video class="m on" src="assets/ovl-tool-settings.mp4" poster="assets/ovl-inspection-stages.webp" muted loop playsinline preload="none" aria-labelledby="c-ovl1"></video>
+            <video class="m" src="assets/ovl-preprocessing-chains.mp4" poster="assets/ovl-inspection-stages.webp" muted loop playsinline preload="none" aria-labelledby="c-ovl2"></video>
+            <img class="m" src="assets/ovl-inspection-stages.webp" alt="Compare Filter, Threshold, Morphology, Blob and Contour results" loading="lazy" decoding="async">
+            <img class="m" src="assets/ovl-sample-catalog.webp" alt="Browse the public sample catalog" loading="lazy" decoding="async">
+            <i class="scan"></i>
+          </div></div>
+        <div class="caps" aria-live="polite">
+          <p id="c-ovl1" class="on" data-ko="툴 설정과 결과 확인">Configure Tools and review their results</p>
+          <p id="c-ovl2" data-ko="전처리 Step 연결과 결과 비교">Compare chained preprocessing steps</p>
+          <p id="c-ovl3" data-ko="Filter, Threshold, Morphology, Blob, Contour 결과 비교">Compare Filter, Threshold, Morphology, Blob and Contour results</p>
+          <p id="c-ovl4" data-ko="공개 샘플 목록">Browse the public sample catalog</p>
+        </div>
+        <div class="thumbs" role="group" data-aria="media">
+          <button type="button" class="on" aria-pressed="true" aria-labelledby="c-ovl1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ovl2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ovl3"><img src="assets/ovl-inspection-stages.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ovl4"><img src="assets/ovl-sample-catalog.webp" alt="" loading="lazy" decoding="async"></button>
+        </div>
+      </div>
+      <div class="dt reveal">
+        <ul class="feat">
+          <li data-ko="PropertyGrid에서 툴 파라미터, ROI와 판정 범위를 설정합니다.">Teach inspection Tools through PropertyGrid parameters, ROIs and acceptance limits.</li>
+          <li data-ko="툴을 Pipeline으로 연결하고 Step·파라미터·Layer 연결을 Recipe XML로 저장합니다.">Connect Tools in a Pipeline and save the Steps, parameters and Layer connections as Recipe XML.</li>
+          <li data-ko="원본·중간·출력 Layer와 검출 표시, 측정값, OK/NG 근거를 비교합니다.">Compare source, intermediate and output Layers, detection drawings, measurements and OK/NG reasons.</li>
+          <li data-ko="같은 Recipe로 Good/Bad 샘플에 Batch inspection을 실행하고 결과를 확인합니다." data-ko-src="ed">Check the same Recipe against Good and Bad samples with Batch inspection.</li>
+        </ul>
+        <ul class="chips">
+          <li class="chip st" data-ko="사용 가능" data-ko-src="tr">Usable</li>
+          <li class="chip"><span data-ko="소스 버전" data-ko-src="tr">Source version</span> <code>v2.2.0-dev.12</code></li>
+          <li class="chip">Apache-2.0</li>
+          <li class="chip">machine-vision</li><li class="chip">opencvsharp4</li><li class="chip">blob-detection</li><li class="chip">pattern-matching</li>
+          <li class="chip"><span aria-hidden="true">★</span> <span class="sr">GitHub stars</span> 15</li>
+        </ul>
+        <p class="get"><span class="gl" data-ko="받는 법" data-ko-src="tr">Get it</span> <span data-ko="Releases에서 win-x64 ZIP을 받습니다. .NET 8 Desktop Runtime (x64)가 필요합니다.">Download the win-x64 ZIP from Releases. It requires the .NET 8 Desktop Runtime (x64).</span> <span data-ko="공개 ZIP은 v2.1.0-rc.3이며, 이 문서에서 보여 주는 소스의 작업 흐름보다 이전 버전입니다.">The published ZIP is v2.1.0-rc.3; it predates the source workflow shown here.</span></p>
+        <p class="acts"><a class="btn" href="https://github.com/Noah8218/OpenVisionLab" target="_blank" rel="noopener"><span data-ko="저장소" data-ko-src="tr">Repository</span> <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </article>
+
+    <article class="row" aria-labelledby="t-lab">
+      <div class="hd reveal">
+        <p class="no">02</p>
+        <h3 id="t-lab">Labeling Studio</h3>
+        <p class="desc" data-ko="한 PC에서 산업 이미지에 라벨을 붙이고 모델을 학습하고 비교한 뒤 추론하는 Windows 데스크톱 도구입니다.">A Windows desktop tool for labeling industrial images, training and comparing models, and running inference on one PC.</p>
+      </div>
+      <div class="vw reveal" data-vw style="--ar:16/9">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="stage">
+            <img class="m on" src="assets/lab-hero-smart-mask.poster.webp" data-gif="assets/lab-hero-smart-mask.gif" alt="Smart Mask: starting box, AI candidate, confirmation, then save and next" loading="lazy" decoding="async">
+            <img class="m" src="assets/lab-detection-washer.webp" alt="Washer inspection with four washers and one defective washer" loading="lazy" decoding="async">
+            <img class="m" src="assets/lab-segmentation-bubble.webp" alt="Nine saved bubble masks in the actual app" loading="lazy" decoding="async">
+            <img class="m" src="assets/lab-anomaly-grid-disk.webp" alt="Hexagon grid with four normal, four anomaly and four undecided images" loading="lazy" decoding="async">
+            <img class="m" src="assets/lab-multimodel-comparison.poster.webp" data-gif="assets/lab-multimodel-comparison.gif" alt="Two models trained on one dataset version, compared on the test split, set as the inspection model, then used for inference" loading="lazy" decoding="async">
+            <img class="m" src="assets/lab-visa-pcb4-test-result.webp" alt="YOLOv8n on a VisA PCB4 test image: three defects found, one small defect missed" loading="lazy" decoding="async">
+            <i class="scan"></i>
+          </div></div>
+        <div class="caps" aria-live="polite">
+          <p id="c-lab1" class="on" data-ko="Smart Mask로 시작 박스를 그리고 후보를 확인해 확정한 뒤 저장하고 다음 이미지로 이동하는 화면">Smart Mask: starting box, AI candidate, confirmation, then save and next</p>
+          <p id="c-lab2" data-ko="와셔 4개와 불량 와셔 1개를 표시한 실제 검사 화면">Washer inspection with four washers and one defective washer</p>
+          <p id="c-lab3" data-ko="기포 영역 9개를 마스크로 저장한 실제 앱 화면">Nine saved bubble masks in the actual app</p>
+          <p id="c-lab4" data-ko="정상 4장, 이상 4장, 미판정 4장을 표시한 육각형 그리드">Hexagon grid with four normal, four anomaly and four undecided images</p>
+          <p id="c-lab5" data-ko="같은 데이터 버전으로 학습한 두 모델을 테스트 분할에서 비교하고 검사 모델로 지정한 뒤 추론">Two models trained on one dataset version, compared on the test split, set as the inspection model, then used for inference</p>
+          <p id="c-lab6" data-ko="VisA PCB4 테스트 이미지의 YOLOv8n 결과: 결함 3개를 찾고 작은 결함 1개를 놓침">YOLOv8n on a VisA PCB4 test image: three defects found, one small defect missed</p>
+        </div>
+        <div class="vnote" data-for="5" hidden>
+          <p data-ko="데이터셋 1종과 테스트 불량 40장의 결과라 생산 정확도의 근거는 아닙니다.">These results come from one dataset with 40 defective test images and are not evidence of production accuracy.</p>
+          <p data-ko="이미지 출처: VisA (Zou et al., ECCV 2022), CC BY 4.0.">Image source: VisA (Zou et al., ECCV 2022), CC BY 4.0.</p>
+        </div>
+        <div class="thumbs" role="group" data-aria="media">
+          <button type="button" class="on" aria-pressed="true" aria-labelledby="c-lab1"><img src="assets/lab-hero-smart-mask.poster.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-lab2"><img src="assets/lab-detection-washer.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-lab3"><img src="assets/lab-segmentation-bubble.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-lab4"><img src="assets/lab-anomaly-grid-disk.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-lab5"><img src="assets/lab-multimodel-comparison.poster.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-lab6"><img src="assets/lab-visa-pcb4-test-result.webp" alt="" loading="lazy" decoding="async"></button>
+        </div>
+      </div>
+      <div class="dt reveal">
+        <ul class="feat">
+          <li data-ko="데이터셋, 라벨링, 학습, 모델 비교, 추론 순서로 진행합니다.">Work moves through Dataset, Labeling, Training, Model comparison, and Inference.</li>
+          <li data-ko="시작 박스를 그리면 MobileSAM 후보가 나오고, 후보를 확인해 마스크를 적용한 뒤 저장하고 다음 이미지로 이동합니다.">Draw a starting box, review the MobileSAM candidate, apply the mask, then save and advance.</li>
+          <li data-ko="같은 데이터 버전으로 YOLOv8n과 YOLO11n을 학습하고, 테스트 분할에서 비교한 뒤, 더 나은 모델을 검사 모델로 지정해 추론합니다.">Train YOLOv8n and YOLO11n on the same dataset version, compare them on the test split, set the better model as the inspection model, then run inference.</li>
+          <li data-ko="사용자가 결과를 확정하고, 라벨은 따로 저장합니다.">The operator confirms the result and saves the labels as separate actions.</li>
+        </ul>
+        <ul class="chips">
+          <li class="chip st" data-ko="사용 가능" data-ko-src="tr">Usable</li>
+          <li class="chip"><span data-ko="버전" data-ko-src="tr">Version</span> <code>0.4.4</code></li>
+          <li class="chip">MIT</li>
+          <li class="chip">yolo</li><li class="chip">object-detection</li><li class="chip">segmentation</li><li class="chip">anomaly-detection</li>
+          <li class="chip"><span aria-hidden="true">★</span> <span class="sr">GitHub stars</span> 6</li>
+        </ul>
+        <p class="get"><span class="gl" data-ko="받는 법" data-ko-src="tr">Get it</span> <span data-ko="Windows 10/11 x64, .NET 8과 WPF 기반이며, 작업자 한 명이 한 PC에서 쓰는 환경입니다.">Windows 10/11 x64; .NET 8 and WPF; one local operator.</span> <span data-ko="Windows 10/11 x64, .NET SDK 8.0.421, PowerShell이 필요합니다.">Windows 10/11 x64, .NET SDK 8.0.421, and PowerShell are required.</span></p>
+        <p class="acts"><a class="btn" href="https://github.com/Noah8218/OpenVisionLab-Labeling-Studio" target="_blank" rel="noopener"><span data-ko="저장소" data-ko-src="tr">Repository</span> <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </article>
+
+    <article class="row" aria-labelledby="t-3d">
+      <div class="hd reveal">
+        <p class="no">03</p>
+        <h3 id="t-3d">3D Studio</h3>
+        <p class="desc" data-ko="3D 검사 조건을 티칭하고 레시피로 저장해 같은 형식(C3D)의 여러 파일에 반복 적용합니다.">Teach inspection steps on 3D data, save a recipe, and apply it to compatible files.</p>
+      </div>
+      <div class="vw reveal" data-vw style="--ar:13/10">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="stage">
+            <img class="m on" src="assets/3d-pcb-lot-inspection.poster.webp" data-gif="assets/3d-pcb-lot-inspection.gif" alt="Inspecting eight synthetic PCB scans with one recipe: five pass, three fail with the failing value and limit" loading="lazy" decoding="async">
+            <img class="m" src="assets/3d-pcb-teach.webp" alt="Teaching a PCB recipe: board thickness, IC height and board warpage on a textured synthetic scan" loading="lazy" decoding="async">
+            <img class="m" src="assets/3d-pcb-result-ng.webp" alt="The result table for a failing board, with its failing value and limit" loading="lazy" decoding="async">
+            <img class="m" src="assets/3d-wafer-lot-inspection.poster.webp" data-gif="assets/3d-wafer-lot-inspection.gif" alt="Inspecting eight synthetic wafers: the failing points and values appear per wafer" loading="lazy" decoding="async">
+            <img class="m" src="assets/3d-wafer-teach.webp" alt="Nine thickness points with their chuck reference regions on a synthetic wafer scan" loading="lazy" decoding="async">
+            <img class="m" src="assets/3d-coupon-height.webp" alt="Thickness Coupon with paired reference and measurement ROIs" loading="lazy" decoding="async">
+            <i class="scan"></i>
+          </div></div>
+        <div class="caps" aria-live="polite">
+          <p id="c-3d1" class="on" data-ko="합성 PCB 스캔 8장을 하나의 레시피로 검사: 5장 OK, 3장 NG와 NG 값·한계 표시">Inspecting eight synthetic PCB scans with one recipe: five pass, three fail with the failing value and limit</p>
+          <p id="c-3d2" data-ko="PCB 레시피 티칭: 텍스처를 입힌 합성 스캔의 기판 두께, IC 높이, 기판 휨 결과">Teaching a PCB recipe: board thickness, IC height and board warpage on a textured synthetic scan</p>
+          <p id="c-3d3" data-ko="검사 목록의 NG 보드와 NG 값·한계">The result table for a failing board, with its failing value and limit</p>
+          <p id="c-3d4" data-ko="합성 웨이퍼 8장 검사: 웨이퍼마다 NG 지점과 값이 표시됨">Inspecting eight synthetic wafers: the failing points and values appear per wafer</p>
+          <p id="c-3d5" data-ko="합성 웨이퍼 스캔의 두께 측정 9지점과 척 기준 영역">Nine thickness points with their chuck reference regions on a synthetic wafer scan</p>
+          <p id="c-3d6" data-ko="기준·측정 영역이 짝을 이루는 Thickness Coupon">Thickness Coupon with paired reference and measurement ROIs</p>
+        </div>
+        <div class="thumbs" role="group" data-aria="media">
+          <button type="button" class="on" aria-pressed="true" aria-labelledby="c-3d1"><img src="assets/3d-pcb-lot-inspection.poster.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-3d2"><img src="assets/3d-pcb-teach.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-3d3"><img src="assets/3d-pcb-result-ng.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-3d4"><img src="assets/3d-wafer-lot-inspection.poster.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-3d5"><img src="assets/3d-wafer-teach.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-3d6"><img src="assets/3d-coupon-height.webp" alt="" loading="lazy" decoding="async"></button>
+        </div>
+      </div>
+      <div class="dt reveal">
+        <ul class="feat">
+          <li data-ko="도구 입력을 연결하고 레시피의 ROI를 설정합니다.">Connect compatible tool inputs and define ROIs in a Recipe.</li>
+          <li data-ko="높이 맵을 전처리하고 휨(Warpage)과 기준면에 대한 Thickness를 측정합니다.">Prepare a height map and measure Warpage or datum-referenced Thickness.</li>
+          <li data-ko="같은 형식의 파일을 일괄 검사하고 파일별 결과와 저장된 Run Record를 확인합니다.">Inspect compatible files as a batch and review per-file results and saved Run Records.</li>
+        </ul>
+        <ul class="chips">
+          <li class="chip st" data-ko="사용 가능" data-ko-src="tr">Usable</li>
+          <li class="chip"><span data-ko="버전" data-ko-src="tr">Version</span> <code>v0.8.2-dev</code></li>
+          <li class="chip">Apache-2.0</li>
+          <li class="chip">3d-inspection</li><li class="chip">height-map</li><li class="chip">point-cloud</li><li class="chip">metrology</li>
+          <li class="chip"><span aria-hidden="true">★</span> <span class="sr">GitHub stars</span> 5</li>
+        </ul>
+        <p class="get"><span class="gl" data-ko="받는 법" data-ko-src="tr">Get it</span> <span data-ko="Windows 10 build 19041 이상 또는 Windows 11 x64, Git, PowerShell 5.1 이상과 global.json이 선택하는 SDK(10.0.300, latestFeature)가 필요합니다.">Use Windows 10 build 19041 or later, or Windows 11, on x64, with Git, PowerShell 5.1 or later, and the SDK selected by global.json (10.0.300, latestFeature).</span> <span data-ko="자체 실행형 Windows 패키지가 있다면 압축을 풀고 OpenVisionLab.ThreeD.Shell.exe를 실행합니다. .NET 런타임이 포함되어 있습니다.">If you already have a self-contained Windows package, extract it and run OpenVisionLab.ThreeD.Shell.exe. Its .NET runtime is included.</span></p>
+        <p class="note" data-ko="현재 버전은 개발용 소스 스냅샷이며, 운영 환경 검증 완료를 뜻하지 않습니다.">This version is a development source snapshot, not a production qualification.</p>
+        <p class="acts"><a class="btn" href="https://github.com/Noah8218/OpenVisionLab-3D-Studio" target="_blank" rel="noopener"><span data-ko="저장소" data-ko-src="tr">Repository</span> <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </article>
+
+    <article class="row" aria-labelledby="t-ms">
+      <div class="hd reveal">
+        <p class="no">04</p>
+        <h3 id="t-ms">Machine Studio</h3>
+        <p class="desc" data-ko="가상 장비를 구성하고 제어 Sequence를 작성해, 실제 하드웨어 시운전 전에 장비 동작을 확인합니다." data-ed>Configure virtual equipment, write its control sequence, and check machine behavior before hardware commissioning.</p>
+      </div>
+      <div class="vw reveal" data-vw style="--ar:1600/860">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="stage">
+            <img class="m on" src="assets/ms-simulation.webp" alt="Simulation with the equipment scene and runtime diagnostics" loading="lazy" decoding="async">
+            <img class="m" src="assets/ms-equipment-setup.webp" alt="Equipment setup with the equipment hierarchy, scene and configuration panel" loading="lazy" decoding="async">
+            <img class="m" src="assets/ms-process-and-actions.webp" alt="Process and actions with the sequence overview and step settings" loading="lazy" decoding="async">
+            <img class="m" src="assets/ms-capture-and-inspection.webp" alt="Capture and inspection with the main image and camera settings" loading="lazy" decoding="async">
+            <img class="m" src="assets/ms-experiments-and-data.webp" alt="Experiments and data with camera variation settings and the applied configuration summary" loading="lazy" decoding="async">
+            <img class="m" src="assets/ms-result-analysis.webp" alt="Result analysis with recorded acquisitions and comparison controls" loading="lazy" decoding="async">
+            <i class="scan"></i>
+          </div></div>
+        <div class="caps" aria-live="polite">
+          <p id="c-ms1" class="on" data-ko="장비 장면과 런타임 진단을 함께 보여 주는 Simulation">Simulation with the equipment scene and runtime diagnostics</p>
+          <p id="c-ms2" data-ko="장비 계층·장면·설정 패널">Equipment setup with the equipment hierarchy, scene and configuration panel</p>
+          <p id="c-ms3" data-ko="Sequence 개요와 Step 설정">Process and actions with the sequence overview and step settings</p>
+          <p id="c-ms4" data-ko="획득 영상과 카메라 설정">Capture and inspection with the main image and camera settings</p>
+          <p id="c-ms5" data-ko="카메라 변화 설정과 적용 설정 요약">Experiments and data with camera variation settings and the applied configuration summary</p>
+          <p id="c-ms6" data-ko="획득 기록과 비교 컨트롤">Result analysis with recorded acquisitions and comparison controls</p>
+        </div>
+        <div class="thumbs" role="group" data-aria="media">
+          <button type="button" class="on" aria-pressed="true" aria-labelledby="c-ms1"><img src="assets/ms-simulation.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ms2"><img src="assets/ms-equipment-setup.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ms3"><img src="assets/ms-process-and-actions.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ms4"><img src="assets/ms-capture-and-inspection.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ms5"><img src="assets/ms-experiments-and-data.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-ms6"><img src="assets/ms-result-analysis.webp" alt="" loading="lazy" decoding="async"></button>
+        </div>
+      </div>
+      <div class="dt reveal">
+        <ul class="feat">
+          <li data-ko="장비·장치·DI/DO 연결을 구성합니다.">Arrange equipment, devices and DI/DO connections.</li>
+          <li data-ko="대상·대기 조건·적용한 Step 설정을 명시해 Sequence를 작성합니다." data-ed>Write sequences with explicit targets, waiting conditions and applied step settings.</li>
+          <li data-ko="테스트 영상을 획득하고 시뮬레이션·고장·시나리오 검증·기록을 확인합니다.">Acquire test images, run simulations and inspect faults, scenario checks and records.</li>
+        </ul>
+        <ul class="chips">
+          <li class="chip st" data-ko="개발 중" data-ko-src="tr">Active development</li>
+          <li class="chip"><span data-ko="버전" data-ko-src="tr">Version</span> <code>v0.2.0-dev.81</code></li>
+          <li class="chip">MIT</li>
+          <li class="chip"><span aria-hidden="true">★</span> <span class="sr">GitHub stars</span> 1</li>
+        </ul>
+        <p class="get"><span class="gl" data-ko="받는 법" data-ko-src="tr">Get it</span> <span data-ko="Windows 10 이상, .NET 8 SDK와 Git이 필요합니다.">Requirements: Windows 10 or later, the .NET 8 SDK, and Git.</span> <span data-ko="Visual Studio에서는 OpenVisionLab.MachineStudio.sln을 열고 시작 프로젝트를 OpenVisionLab.MachineStudio로 지정합니다.">Visual Studio users can open OpenVisionLab.MachineStudio.sln and select OpenVisionLab.MachineStudio as the startup project.</span></p>
+        <p class="note" data-ko="생산 장비 제어나 안전 기능에 사용하도록 검증되지 않았습니다.">It is not qualified for production equipment control or safety functions.</p>
+        <p class="acts"><a class="btn" href="https://github.com/Noah8218/OpenVisionLab-Machine-Studio" target="_blank" rel="noopener"><span data-ko="저장소" data-ko-src="tr">Repository</span> <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </article>
+
+    <article class="row" aria-labelledby="t-sdk">
+      <div class="hd reveal">
+        <p class="no">05</p>
+        <h3 id="t-sdk">Vision SDK</h3>
+        <p class="desc" data-ko="C# 애플리케이션에 2D 검사 도구와 높이 맵 / 전체 XYZ 3D 알고리즘을 연결하세요.">Use 2D inspection tools and height-map / full-XYZ 3D algorithms in your own C# application.</p>
+      </div>
+      <div class="vw reveal" data-vw style="--ar:16/9">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="stage">
+            <img class="m on" src="assets/sdk-matching-result.webp" alt="Template-matching results" loading="lazy" decoding="async">
+            <div class="m code" tabindex="0" role="region" aria-labelledby="c-sdk2"><pre><code><span class="ln"><span class="k">using</span> System;</span><span class="ln"><span class="k">using</span> OpenCvSharp;</span><span class="ln"><span class="k">using</span> OpenVisionLab.Vision2D;</span><span class="ln"><span class="k">using</span> OpenVisionLab.Vision2D.Property;</span><span class="ln"><span class="k">using</span> OpenVisionLab.Vision2D.Tool;</span><span class="ln"> </span><span class="ln"><span class="k">using</span> Mat source = <span class="k">new</span> Mat(16, 16, MatType.CV_8UC1, <span class="k">new</span> Scalar(100));</span><span class="ln"><span class="k">using</span> ThresholdTool tool = <span class="k">new</span> ThresholdTool();</span><span class="ln">tool.SetProperty(<span class="k">new</span> ThresholdToolProperty { Threshold = 50 });</span><span class="ln"><span class="k">using</span> VisionToolResult result = tool.Execute(source);</span><span class="ln"><span class="k">if</span> (!result.Success) <span class="k">throw new</span> InvalidOperationException(<span class="s">$"{result.ErrorName}: {result.Message}"</span>);</span><span class="ln">Console.WriteLine(<span class="s">$"{result.ResultImage.Width}x{result.ResultImage.Height}"</span>);</span></code></pre></div>
+            <i class="scan"></i>
+          </div></div>
+        <div class="caps" aria-live="polite">
+          <p id="c-sdk1" class="on" data-ko="템플릿 매칭 결과" data-ko-src="tr">Template-matching results</p>
+          <p id="c-sdk2" data-ko="짧은 검사 예제">A small inspection</p>
+        </div>
+        <div class="thumbs" role="group" data-aria="media">
+          <button type="button" class="on" aria-pressed="true" aria-labelledby="c-sdk1"><img src="assets/sdk-matching-result.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-sdk2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4C7 4 6 5 6 7v3c0 1-1 2-2 2 1 0 2 1 2 2v3c0 2 1 3 3 3M15 4c2 0 3 1 3 3v3c0 1 1 2 2 2-1 0-2 1-2 2v3c0 2-1 3-3 3"/></svg></button>
+        </div>
+      </div>
+      <div class="dt reveal">
+        <ul class="feat">
+          <li data-ko="SDK는 이미지·측정값·결과 근거를 반환합니다.">The SDK returns images, measurements and result evidence.</li>
+          <li data-ko="영상 수집, 화면 표시, ROI 편집, 레시피 저장과 최종 설비 판정은 사용하는 애플리케이션이 담당합니다.">Your application owns acquisition, display, ROI editing, recipe storage and the final equipment decision.</li>
+          <li data-ko="2D는 Tool을 설정하고 Execute(Mat)를 호출합니다." data-ko-src="ed">For 2D, configure a Tool and call Execute(Mat).</li>
+        </ul>
+        <ul class="chips">
+          <li class="chip st" data-ko="소스 공개" data-ko-src="tr">Source available</li>
+          <li class="chip"><span data-ko="소스 버전" data-ko-src="tr">Source version</span> <code>v3.3.0-rc.3</code></li>
+          <li class="chip">MIT</li>
+          <li class="chip">image-processing</li><li class="chip">matching</li><li class="chip">blob</li><li class="chip">contour</li>
+          <li class="chip"><span aria-hidden="true">★</span> <span class="sr">GitHub stars</span> 10</li>
+        </ul>
+        <p class="get"><span class="gl" data-ko="받는 법" data-ko-src="tr">Get it</span> <span data-ko="3.3.0-rc.2 GitHub 사전 릴리스에는 SDK .nupkg 6개와 SHA-256 목록이 있습니다.">The 3.3.0-rc.2 GitHub prerelease contains six SDK .nupkg files and a SHA-256 list.</span> <span data-ko="OpenVisionLab이 작성한 부분은 MIT License를 따르며 NOTICE에 따라 필요한 저작권·기여 고지를 보존해야 합니다.">OpenVisionLab-authored portions use the MIT License, with copyright and attribution preserved as required by NOTICE.</span> <strong data-ko="Core에 번들된 OpenCvSharp/OpenCV 바이너리의 상업적 재배포는 최종 고지 묶음, Intel 고지 조건과 배포 절차에 대한 배포·법무 책임자의 승인 전까지 차단 상태입니다.">Commercial redistribution of Core's bundled OpenCvSharp/OpenCV binaries remains blocked pending distribution/legal-owner approval of the final notice bundle, Intel notice conditions and distribution workflow.</strong></p>
+        <p class="acts"><a class="btn" href="https://github.com/Noah8218/OpenVisionLab-Vision-SDK" target="_blank" rel="noopener"><span data-ko="저장소" data-ko-src="tr">Repository</span> <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </article>
+
+    <article class="row" aria-labelledby="t-rbv">
+      <div class="hd reveal">
+        <p class="no">06</p>
+        <h3 id="t-rbv">Raw Buffer Visualizer</h3>
+        <p class="desc"><span data-ko="C# 머신비전용 Image Watch 방식 디버깅" data-ko-src="ed">Image Watch-style debugging for C# machine vision</span>: <span data-ko="Visual Studio 중단점에서 이미지 변수와 원시 2D 버퍼를 직접 검사합니다.">inspect image variables and raw 2D buffers at a Visual Studio breakpoint in one docked viewer.</span></p>
+      </div>
+      <div class="vw reveal" data-vw style="--ar:1600/870">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="stage">
+            <img class="m on" src="assets/rbv-debugger-memory-image.poster.webp" data-gif="assets/rbv-debugger-memory-image.gif" alt="Open image memory from Visual Studio Watch in the docked viewer" loading="lazy" decoding="async">
+            <img class="m" src="assets/rbv-manual-stride-before.webp" alt="PCB snapshot before applying the known 3920-byte row stride" loading="lazy" decoding="async">
+            <img class="m" src="assets/rbv-manual-stride-after.webp" alt="The same PCB snapshot after applying the known 3920-byte row stride" loading="lazy" decoding="async">
+            <i class="scan"></i>
+          </div></div>
+        <div class="caps" aria-live="polite">
+          <p id="c-rbv1" class="on" data-ko="Visual Studio Watch에서 메모리 이미지를 도킹 뷰어로 열기">Open image memory from Visual Studio Watch in the docked viewer</p>
+          <p id="c-rbv2" data-ko="잘못된 3,840바이트 스트라이드로 해석한 PCB 스냅샷">PCB snapshot before applying the known 3920-byte row stride</p>
+          <p id="c-rbv3" data-ko="3,920바이트 스트라이드를 직접 적용한 같은 PCB 스냅샷">The same PCB snapshot after applying the known 3920-byte row stride</p>
+        </div>
+        <div class="vnote" data-for="0">
+          <p data-ko="편집한 시연 영상입니다. 처리 시간을 측정한 영상은 아닙니다." data-ko-src="ed">Edited demonstration; not a processing-time measurement.</p>
+        </div>
+        <div class="thumbs" role="group" data-aria="media">
+          <button type="button" class="on" aria-pressed="true" aria-labelledby="c-rbv1"><img src="assets/rbv-debugger-memory-image.poster.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-rbv2"><img src="assets/rbv-manual-stride-before.webp" alt="" loading="lazy" decoding="async"></button>
+          <button type="button" aria-pressed="false" aria-labelledby="c-rbv3"><img src="assets/rbv-manual-stride-after.webp" alt="" loading="lazy" decoding="async"></button>
+        </div>
+      </div>
+      <div class="dt reveal">
+        <ul class="feat">
+          <li data-ko="디버거 시각화 도구로 Bitmap, OpenCvSharp Mat, Emgu CV Mat, RawBufferView, RawBufferSnapshot과 지원되는 컬렉션을 엽니다." data-ko-src="tr">Open Bitmap, OpenCvSharp Mat, Emgu CV Mat, RawBufferView, RawBufferSnapshot and supported collections through debugger visualizers.</li>
+          <li data-ko="크기, 형식, 스트라이드, 바이트 순서, 유효 비트, 픽셀 값, 소스/픽셀 주소, 소스 수명을 확인합니다." data-ko-src="tr">Inspect dimensions, format, stride, byte order, valid bits, pixel values, source/pixel addresses and source lifetime.</li>
+          <li data-ko="보관한 이미지를 비교하고 버퍼 해석을 진단합니다. 원시 값 히스토그램을 확인하고 스냅샷을 저장합니다." data-ko-src="tr">Compare retained images, diagnose buffer interpretation, inspect raw-value histograms and save snapshots.</li>
+        </ul>
+        <ul class="chips">
+          <li class="chip st">VS Marketplace</li>
+          <li class="chip"><span data-ko="소스 버전" data-ko-src="tr">Source version</span> <code>2.2.5</code></li>
+          <li class="chip">MIT</li>
+          <li class="chip">visual-studio-extension</li><li class="chip">debugging-tools</li><li class="chip">raw-buffer</li><li class="chip">intptr</li>
+          <li class="chip"><span aria-hidden="true">★</span> <span class="sr">GitHub stars</span> 4</li>
+        </ul>
+        <p class="get"><span class="gl" data-ko="받는 법" data-ko-src="tr">Get it</span> <span data-ko="지원하는 확장 대상은 Visual Studio 2022 17.9+ x64와 안정판 Visual Studio 2026 18.x입니다." data-ko-src="tr">Supported extension targets are Visual Studio 2022 17.9+ x64 and stable Visual Studio 2026 18.x.</span> <span data-ko="소스 버전은 현재 Marketplace에서 받을 수 있는 버전과 별개입니다." data-ko-src="tr">Source version is distinct from the version currently available on Marketplace.</span></p>
+        <p class="acts"><a class="btn" href="https://github.com/Noah8218/RawBufferVisualizer" target="_blank" rel="noopener"><span data-ko="저장소" data-ko-src="tr">Repository</span> <span aria-hidden="true">↗</span></a>
+          <a class="btn pri" href="https://marketplace.visualstudio.com/items?itemName=openvisionlab.RawBufferVisualizer" target="_blank" rel="noopener">Marketplace <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="ecosystem" class="sec" aria-labelledby="eco-h">
+  <div class="wrap">
+    <header class="sh reveal"><h2 id="eco-h" class="ttl"><span class="u" data-ko="구성도" data-ko-src="tr" data-ed>Overview</span></h2>
+      <p class="meta" data-ko="OpenVisionLab 방향" data-ko-src="tr">OpenVisionLab Direction</p></header>
+    <div class="eco" id="eco">
+      <svg class="eco-svg" aria-hidden="true">
+        <path class="e s" data-f="concept" data-t="machine" style="--d:.3s"/>
+        <path class="e s" data-f="machine" data-t="inputs" style="--d:.8s"/>
+        <path class="e s" data-f="sdk" data-t="2d" data-tx=".22" style="--d:1.3s"/>
+        <path class="e s" data-f="sdk" data-t="3d" data-tx=".22" style="--d:1.4s"/>
+        <path class="e s" data-f="sdk" data-t="lab" data-tx=".22" style="--d:1.5s"/>
+        <path class="e s" data-f="2d" data-t="results" data-tx="-.25" style="--d:2s"/>
+        <path class="e s" data-f="3d" data-t="results" style="--d:2.1s"/>
+        <path class="e s" data-f="lab" data-t="results" data-tx=".25" style="--d:2.2s"/>
+        <path class="e x" data-f="inputs" data-t="2d" data-tx="-.22" style="--d:2.9s"/>
+        <path class="e x" data-f="inputs" data-t="3d" data-tx="-.22" style="--d:3s"/>
+        <path class="e x" data-f="inputs" data-t="lab" data-tx="-.22" style="--d:3.1s"/>
+        <path class="e x" data-f="results" data-t="decision" style="--d:3.5s"/>
+      </svg>
+      <div class="nd" id="n-concept" style="--d:0s"><span data-ko="장비 개념" data-ko-src="tr">Equipment concept</span><span data-ko="및 공정 설계" data-ko-src="tr">and process design</span></div>
+      <div class="nd pd" id="n-machine" style="--d:.1s"><strong>Machine Studio</strong><span data-ko="시퀀스, 축, I/O, 고장" data-ko-src="tr">Sequence, axis, I/O, fault</span></div>
+      <div class="nd" id="n-inputs" style="--d:.2s"><span data-ko="가상 카메라" data-ko-src="tr">Virtual camera</span><span data-ko="및 이미지 입력" data-ko-src="tr">and image inputs</span></div>
+      <div class="nd pd" id="n-sdk" style="--d:.3s"><strong>Vision SDK</strong><span data-ko="공통 검사 알고리즘" data-ko-src="tr">Shared inspection algorithms</span></div>
+      <div class="nd pd" id="n-2d" style="--d:.4s"><strong>2D Workbench</strong></div>
+      <div class="nd pd" id="n-3d" style="--d:.5s"><strong>3D Studio</strong></div>
+      <div class="nd pd" id="n-lab" style="--d:.6s"><strong>Labeling Studio</strong><span data-ko="데이터, 학습, 추론" data-ko-src="tr">Data, training, inference</span></div>
+      <div class="nd" id="n-results" style="--d:.7s"><span data-ko="검사 결과" data-ko-src="tr">Inspection results</span><span data-ko="및 지표" data-ko-src="tr">and metrics</span></div>
+      <div class="nd" id="n-decision" style="--d:.8s"><span data-ko="장비 시퀀스" data-ko-src="tr">Machine sequence</span><span data-ko="판정 및 재생" data-ko-src="tr">decision and replay</span></div>
+    </div>
+    <ul class="legend reveal">
+      <li><svg viewBox="0 0 48 8" aria-hidden="true"><path class="s" d="M2 4h44"/></svg><span data-ko="실선 화살표는 사용 가능한 워크플로나 SDK 재사용을 나타냅니다." data-ko-src="tr">Solid arrows show available workflows or SDK reuse.</span></li>
+      <li><svg viewBox="0 0 48 8" aria-hidden="true"><path class="x" d="M2 4h44"/></svg><span data-ko="점선 화살표는 아직 개발 중인 프로젝트 간 직접 연동을 나타냅니다." data-ko-src="tr">Dashed arrows mark direct cross-project integration still in development.</span></li>
+    </ul>
+    <p class="purpose reveal"><span data-ko="OpenVisionLab은 실제 장비 시험을 대체하지 않습니다. " data-ko-src="tr" data-ed>OpenVisionLab does not replace testing on the real machine. It lets you check </span><strong data-ko="아키텍처, 시퀀스, 검사, 고장 모드, 통합" data-ko-src="tr" data-ed>architecture, sequence, inspection, failure modes and integration</strong><span data-ko="을 장비가 들어오기 전에 확인할 수 있게 해서, 실제 장비 시간은 하드웨어, 광학계, 양산 샘플이 필요한 일에 쓸 수 있게 합니다." data-ko-src="tr" data-ed> before the machine arrives, so time on the real machine goes to work that needs hardware, optics and production samples.</span></p>
+  </div>
+</section>
+
+<section id="skills" class="sec" aria-labelledby="skills-h">
+  <div class="wrap">
+    <header class="sh reveal"><h2 id="skills-h" class="ttl"><span class="u" data-ko="기술" data-ko-src="tr">Skills</span></h2>
+      <p class="meta" data-ko="프로젝트의 바탕이 된 경험" data-ko-src="tr">Experience Behind the Projects</p></header>
+    <div class="skills" data-stagger>
+      <article class="sk reveal">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 11V6a2 2 0 0 1 2-2h5M21 4h5a2 2 0 0 1 2 2v5M28 21v5a2 2 0 0 1-2 2h-5M11 28H6a2 2 0 0 1-2-2v-5"/><circle cx="16" cy="16" r="5"/><circle cx="16" cy="16" r="1.5"/></svg>
+        <h3 data-ko="머신비전" data-ko-src="tr">Machine Vision</h3>
+        <ul><li data-ko="2D: Edge, Blob, Contour, Pattern Matching, Line Gauge, 측정" data-ko-src="tr">2D: Edge, Blob, Contour, Pattern Matching, Line Gauge and measurement</li><li data-ko="3D: 높이 맵, 전체 XYZ, Thickness, Warpage" data-ko-src="tr">3D: Height Map, Full XYZ, Thickness and Warpage</li><li data-ko="이미지 좌표 변환, 결함 병합, 검사 결과 처리" data-ko-src="tr">Image coordinate conversion, defect merging and inspection-result processing</li><li data-ko="Area Scan, Line Scan 카메라 워크플로" data-ko-src="tr">Area Scan and Line Scan camera workflows</li></ul>
+      </article>
+      <article class="sk reveal">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="4.5"/><path d="M16 3v5M16 24v5M3 16h5M24 16h5M6.8 6.8l3.5 3.5M21.7 21.7l3.5 3.5M25.2 6.8l-3.5 3.5M10.3 21.7l-3.5 3.5"/></svg>
+        <h3 data-ko="장비 소프트웨어" data-ko-src="tr">Equipment Software</h3>
+        <ul><li data-ko="카메라, 조명, I/O, 센서, PLC, 모션 연동" data-ko-src="tr">Camera, lighting, I/O, sensor, PLC and motion integration</li><li data-ko="검사 시퀀스와 레시피 아키텍처" data-ko-src="tr">Inspection Sequence and Recipe architecture</li><li data-ko="TOP / BTM 독립 처리와 멀티 워커 실행" data-ko-src="tr">TOP / BTM independent processing and multi-worker execution</li><li data-ko="타임아웃, 복구, 지연 콜백 격리" data-ko-src="tr">Timeout, recovery and delayed-callback isolation</li><li data-ko="장시간 가동 장비의 상태·오류 처리 설계" data-ko-src="tr">Long-running equipment-state and error-handling design</li></ul>
+      </article>
+      <article class="sk reveal">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 11h19m0 0-5-5m5 5-5 5M27 21H8m0 0 5-5m-5 5 5 5"/></svg>
+        <h3 data-ko="성능 및 연동" data-ko-src="tr">Performance &amp; Interop</h3>
+        <ul><li data-ko="C++ DLL / C++/CLI / C# 연동" data-ko-src="tr">C++ DLL / C++/CLI / C# interoperability</li><li data-ko="대용량 비관리 이미지 버퍼" data-ko-src="tr">Large unmanaged image buffers</li><li data-ko="멀티스레드 검사 큐" data-ko-src="tr">Multi-threaded inspection queues</li><li data-ko="규칙 기반 / AI 검사 모듈 연동" data-ko-src="tr">Rule / AI inspection-module integration</li><li data-ko="네이티브 / 관리 코드 경계 설계" data-ko-src="tr">Native / managed boundary design</li></ul>
+      </article>
+      <article class="sk reveal">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="3"/><path d="M3 11h26M13 16l-3 3 3 3M19 16l3 3-3 3"/></svg>
+        <h3 data-ko="데스크톱 및 도구" data-ko-src="tr">Desktop &amp; Tooling</h3>
+        <ul><li>C# / .NET</li><li>WPF / WinForms</li><li>OpenCvSharp</li><li>Visual Studio extensions</li><li>Git / SVN / Jenkins / GitHub Actions</li></ul>
+      </article>
+    </div>
+    <div class="kw reveal">
+      <p class="sub" data-ko="사용 기술" data-ko-src="tr">Technologies</p>
+      <ul class="chips"><li class="chip">C#</li><li class="chip">.NET</li><li class="chip">WPF</li><li class="chip">WinForms</li><li class="chip">OpenCvSharp</li><li class="chip">C++/CLI</li><li class="chip">Visual Studio</li><li class="chip">Git</li><li class="chip">SVN</li><li class="chip">Jenkins</li><li class="chip">GitHub Actions</li><li class="chip">PLC</li></ul>
+    </div>
+  </div>
+</section>
+
+<section id="principles" class="pr-sec" aria-labelledby="pr-h">
+  <div class="pr-wrap" id="pr-wrap">
+    <div class="pr-pin">
+      <div class="wrap">
+        <h2 id="pr-h" class="ttl sm"><span class="u in" data-ko="엔지니어링 원칙" data-ko-src="tr">Engineering Principles</span></h2>
+        <ol class="pr">
+          <li data-ko="Recipe를 불러올 때는 검사 실행 없이 설정만 복원합니다.">Loading a Recipe restores its settings without running the inspection.</li>
+          <li data-ko="저장과 실행은 별도 동작입니다.">Saving and running are separate actions.</li>
+          <li data-ko="프로젝트 열기, 장치 선택, 결과 탐색만으로 장비가 실행되지는 않습니다.">Loading a project, selecting a device or browsing results does not run the machine.</li>
+          <li data-ko="실행 오류는 NG와 구분합니다.">Execution errors are reported separately from NG.</li>
+          <li data-ko="입력이나 파라미터가 바뀌면 보관된 결과는 이전 결과로 표시합니다. 현재 설정의 결과를 보려면 다시 실행합니다.">After input or parameter changes, retained results are marked as previous results; run again to update them.</li>
+          <li data-ko="AI 결과는 검토할 후보입니다.">AI results are candidates for review.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="releases" class="sec" aria-labelledby="rel-h">
+  <div class="wrap">
+    <header class="sh reveal"><h2 id="rel-h" class="ttl"><span class="u" data-ko="릴리스" data-ko-src="tr">Releases</span></h2></header>
+
+    <h3 class="sub reveal" data-ko="최신" data-ko-src="tr">Latest</h3>
+    <ul class="lat" data-stagger>
+      <li class="reveal"><p class="lh"><strong>Labeling Studio</strong> <code>0.4.4</code></p><p data-ko="실제 PCB 이미지(VisA PCB4)로 전체 워크플로를 실행했습니다. 라벨을 가져온 뒤 앱에서 YOLOv8n과 YOLO11n을 학습해 비교했고, 엣지 실행 구성으로 TensorRT 엔진을 만들었습니다. 라벨 가져오기가 이제 고른 분할을 유지합니다." data-ko-src="tr">Ran the full workflow on real PCB images (VisA PCB4): labels imported, YOLOv8n and YOLO11n trained and compared in the app, and TensorRT engines built with the edge runtime. Label import now keeps the chosen split.</p></li>
+      <li class="reveal"><p class="lh"><strong>2D Workbench</strong> <code>2.2.0-dev.12</code></p><p data-ko="Learn 창이 선택한 테마를 따르고, 더 많은 편집기를 현지화했으며, 임계값 설정이 텍스트, 슬라이더, 저장한 레시피에서 일관되게 유지됩니다." data-ko-src="tr">Learn windows follow the selected theme, more editors are localized, and threshold settings stay consistent across text, sliders and saved Recipes.</p></li>
+      <li class="reveal"><p class="lh"><strong>3D Studio</strong> <code>0.8.2-dev</code></p><p data-ko="Thickness에 선택형 기준면 RMS 한계를 추가하고, Validation에 일괄 기대 결과와 이름 붙은 실패 원인을 더했으며, 작업 영역 탭 전환을 더 빠르게 했습니다." data-ko-src="tr">Adds an optional reference-surface RMS limit to Thickness, bulk expected results and named failure causes in Validation, and faster workspace tab switching.</p></li>
+    </ul>
+
+    <h3 class="sub reveal" data-ko="최근 버전 이력">Recent version history</h3>
+    <ol class="tl" id="tl">
+      <li class="ti"><time datetime="2026-11-16">2026-11-16</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.3.0-rc.3</code></p><p data-ko="Matching 탐색 grid를 제한하고 Host 종료·촬영 deadline·terminal 결과를 보강했습니다. Caliper 품질을 선택형 Pipeline acceptance에 연결하고 고정 패키지를 사용하는 앱 검증을 추가했습니다." data-ko-src="ed">Bound Matching pose grids; harden frame Host shutdown, acquisition deadlines and terminal results; connect Caliper quality to opt-in Pipeline acceptance and verify fixed package consumers.</p></div></li>
+      <li class="ti"><time datetime="2026-11-16">2026-11-16</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.3.0-rc.2</code></p><p data-ko="실패·취소와 프레임·raw 높이 소유권을 보강하고 선·원 캘리퍼와 장비 없는 프레임 Host 예제를 추가했습니다.">Harden failure/cancellation and frame/raw-height ownership; add line/circle calipers and a device-free frame Host example.</p></div></li>
+      <li class="ti"><time datetime="2026-11-12">2026-11-12</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.2.5</code></p><p data-ko="중첩된 이미지 탐색, 포인터 프레임 매칭, 디버거 등록 패키지 검사" data-ko-src="tr">Nested image discovery, pointer-frame matching and debugger registration package checks</p></div></li>
+      <li class="ti"><time datetime="2026-11-02">2026-11-02</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.3.0-rc.1</code></p><p data-ko="9점 표면 보정, 물리 엣지 gap/flush와 3D 협력 취소를 추가했습니다." data-ko-src="ed">Add nine-point surface compensation, physical-edge gap/flush and cooperative 3D cancellation.</p></div></li>
+      <li class="ti"><time datetime="2026-11-02">2026-11-02</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.2.4</code></p><p data-ko="검사 패널 상태 유지, 레이아웃·세션 복구, 간결한 판독값 표시, JSON 스트림 용량" data-ko-src="tr">Inspector state persistence, layout and session recovery, compact readouts and JSON stream capacity</p></div></li>
+      <li class="ti"><time datetime="2026-10-12">2026-10-12</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.2.0-rc.5</code></p><p data-ko="CI에서 패키지 검증 진단 정보를 보존하도록 했습니다." data-ko-src="ed">Preserve package-verification diagnostics in CI.</p></div></li>
+      <li class="ti"><time datetime="2026-10-12">2026-10-12</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.2.0-rc.4</code></p><p data-ko="QR 판독, 선택형 3D CUDA 연산과 패키지 사용 안내를 추가했습니다." data-ko-src="ed">Add QR reading, optional 3D CUDA operations and consumer guidance.</p></div></li>
+      <li class="ti"><time datetime="2026-10-04">2026-10-04</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.1.0</code></p><p data-ko="선택형 CUDA 엣지 점수 계산을 추가하고 표면 측정을 개선했습니다." data-ko-src="ed">Add optional CUDA edge scoring and improve surface measurements.</p></div></li>
+      <li class="ti"><time datetime="2026-10-01">2026-10-01</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.2.3</code></p><p data-ko="지원하는 설치 범위를 유지한 채 Preview 메타데이터를 해제했습니다." data-ko-src="tr">Cleared Preview metadata while preserving the supported installation range</p></div></li>
+      <li class="ti"><time datetime="2026-10-01">2026-10-01</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.2.2</code></p><p data-ko="사용자가 선택한 도킹, 부동 창, 문서 탭 위치를 유지했습니다." data-ko-src="tr">Preserved user-selected docking, floating and document-tab placement</p></div></li>
+      <li class="ti"><time datetime="2026-10-01">2026-10-01</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.2.1</code></p><p data-ko="Classic 시각화 도구 로딩과 패키지 등록 검사를 수정했습니다." data-ko-src="tr">Corrected Classic visualizer loading and package registration checks</p></div></li>
+      <li class="ti"><time datetime="2026-09-28">2026-09-28</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.2.0</code></p><p data-ko="대화 상자 없는 이미지 열기, 이미지 전용 컬렉션 라우팅, 픽셀 측정" data-ko-src="tr">Dialog-free image opening, image-only collection routing and pixel measurement</p></div></li>
+      <li class="ti"><time datetime="2026-09-15">2026-09-15</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.1.0</code></p><p data-ko="검사 상태, 탐색 응답성, 픽셀/히스토그램 동작, 더 안전한 저장" data-ko-src="tr">Inspection status, discovery responsiveness, pixel/histogram behavior and safer saves</p></div></li>
+      <li class="ti"><time datetime="2026-09-12">2026-09-12</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.0.9</code></p><p>Checked live transfer for medium native images, final-row ROI spans and pinned-view stability</p></div></li>
+      <li class="ti"><time datetime="2026-09-04">2026-09-04</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.0.8</code></p><p>Correct debugger payload packaging and bounded incremental inspection</p></div></li>
+      <li class="ti"><time datetime="2026-09-03">2026-09-03</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Raw Buffer Visualizer</span> <code>2.0.7</code></p><p data-ko="부호 있는 Int32 이미지 지원. 이 패키지는 2.0.8이 대체했습니다." data-ko-src="tr">Signed Int32 image support; package superseded by 2.0.8</p></div></li>
+      <li class="ti"><time datetime="2026-08-05">2026-08-05</time><i class="dot" aria-hidden="true"></i><div class="tc"><p class="th"><span class="chip pj">Vision SDK</span> <code>3.0.0</code></p><p data-ko="OpenVisionLab 패키지·DLL·네임스페이스 이름을 도입했습니다.">Introduce the OpenVisionLab package, DLL and namespace names.</p></div></li>
+    </ol>
+
+    <div class="road reveal">
+      <h3 class="sub" data-ko="로드맵" data-ko-src="tr">Roadmap</h3>
+      <dl>
+        <div><dt data-ko="다음" data-ko-src="tr">Next</dt><dd data-ko="Machine Studio의 영상 획득을 2D, 3D, Labeling 검사 워크플로에 연결합니다." data-ko-src="tr">Connect Machine Studio acquisition to 2D, 3D and Labeling inspection workflows.</dd></div>
+        <div><dt data-ko="계획" data-ko-src="tr">Planned</dt><dd data-ko="생성형 AI 기반 검증 이미지 데이터." data-ko-src="tr">Generative AI-based validation image data.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="sec contact" aria-labelledby="contact-h">
+  <div class="wrap">
+    <header class="sh reveal"><h2 id="contact-h" class="ttl"><span class="u" data-ko="연락처" data-ko-src="tr">Contact</span></h2></header>
+    <p class="big reveal" data-ko="도구 관련 질문, 버그 제보, 장비 소프트웨어 관련 문의는 이메일이 가장 빠릅니다." data-ko-src="tr" data-ed>Questions about the tools, bug reports, or equipment software work: email is the fastest way to reach me.</p>
+    <p class="btns reveal">
+      <a class="btn pri" href="mailto:dhqtlzm12@naver.com"><span data-ko="이메일" data-ko-src="tr">Email</span> <span aria-hidden="true">→</span></a>
+      <a class="btn" href="https://github.com/Noah8218" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+      <a class="btn" href="https://marketplace.visualstudio.com/items?itemName=openvisionlab.RawBufferVisualizer" target="_blank" rel="noopener"><span>Visual Studio Marketplace</span> <span class="bsub">Raw Buffer Visualizer</span> <span aria-hidden="true">↗</span></a>
+    </p>
+    <p class="mail reveal"><a href="mailto:dhqtlzm12@naver.com">dhqtlzm12@naver.com</a></p>
+    <p class="aside reveal" data-ko="프로젝트가 시간을 아껴 주었다면, 스타나 팔로우가 다른 비전 개발자들이 프로젝트를 찾는 데 도움이 됩니다." data-ko-src="tr">If a project saves you time, a star or follow helps other vision developers find it.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot"><div class="wrap"><p class="credit"><span data-ko="이미지 출처: VisA (Zou et al., ECCV 2022), ">Image source: VisA (Zou et al., ECCV 2022), </span><a href="https://github.com/amazon-science/spot-diff" target="_blank" rel="noopener">CC BY 4.0</a>.</p><p>Copyright (c) 2026 Noah Choi</p></div></footer>
+
+<script src="js/hero.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

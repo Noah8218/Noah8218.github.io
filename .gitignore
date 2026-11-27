@@ -1,0 +1,14 @@
+# 검사 도구(tools/shot_site.py 등)가 만드는 스크린샷·임시 출력. 언제든 다시 만들 수 있다.
+tools/out/
+# 검사 도구가 헤드리스 브라우저용으로 만드는 프로필 폴더. 사용자 PC마다 다른 캐시이고 용량이 크다.
+tools/.browser-profile-*/
+# 파이썬이 만드는 바이트코드 캐시.
+__pycache__/
+*.pyc
+# 에셋 출처 매니페스트 원본. 저장소에는 올리지 않고 docs/assets-provenance.md 표로 옮겨 적었다.
+assets/manifest.json
+# 운영체제가 폴더마다 만드는 메타 파일.
+.DS_Store
+Thumbs.db
+# 로그 파일.
+*.log
