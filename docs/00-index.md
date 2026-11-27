@@ -28,7 +28,7 @@
 
 | 파일 | 한 줄 설명 | 언제 읽는가 |
 |---|---|---|
-| `sources/` ([stats.md](sources/stats.md) 등) | 공개 README·메타 사본과 Star·라이선스 현황. 사이트 문구의 근거 말뭉치 | 문구 출처를 확인하거나 수치를 갱신할 때 |
+| `sources/` ([stats.md](sources/stats.md) 등) | 공개 README·메타 사본과 라이선스 현황(Star·팔로워 수치는 사이트에 쓰지 않는다). 사이트 문구의 근거 말뭉치 | 문구 출처를 확인하거나 수치를 갱신할 때 |
 | [assets-provenance.md](assets-provenance.md) | `assets/` 파일별 원본 출처·라이선스 표 | 이미지·영상을 추가하거나 출처를 점검할 때 |
 | `../tools/` | 검사 도구 5개(`check_site`, `lint_site`, `shot_site`, `scan_public`, `fetch_sources`)와 성능 측정 도구 3개(`perf_site`, `perf_profile`, `perf_ab`) | 검증할 때(사용법은 AGENTS.md 5절, [tools/README.md](../tools/README.md)) |
 

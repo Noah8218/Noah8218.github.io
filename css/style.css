@@ -128,9 +128,7 @@ html[lang=ko] .cue,html[lang=ko] .ttl,html[lang=ko] .ttl.sm,html[lang=ko] .sub,h
 .stat{padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
 .num{font-size:clamp(2.6rem,5vw,4rem);font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .lbl{margin-top:8px;color:var(--muted)}
-.sub2{margin-top:12px;font-weight:700}
-.sub2 span:first-child{font-size:1.6rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.asof{margin-top:10px;color:var(--muted);font-size:.95rem}
+.stat:last-child:nth-child(odd){grid-column:1/-1}
 
 /* projects */
 .row{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-rows:auto 1fr;grid-template-areas:"hd vw" "dt vw";column-gap:clamp(28px,5vw,72px);padding-block:clamp(48px,7vw,88px);border-top:1px solid var(--line)}

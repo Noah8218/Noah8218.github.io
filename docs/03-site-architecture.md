@@ -15,7 +15,7 @@
 |---|---|---|---|
 | (헤더) `#nav` | `header.nav` | 고정 내비 | `.progress > #bar`(스크롤 진행 막대), `nav.pill`: `a.brand`, `ul.links#menu`(About, Projects, Overview, Skills, Principles, Releases, Contact), `.tools`(`.seg`+`[data-lang]` 버튼 EN·KO, `#theme`, `#motion`(모션 정지 토글), `#burger`) |
 | `#top` | `section.hero` | 인사·이름·직함·소개·버튼 | `canvas#hero-canvas`(js/hero.js), `.hello`, `h1.name`(`.w > span` 단어 마스크), `.idl`(`.kname`, `.role`), `.tag`, `.bio`, `.btns`, `a.cue` |
-| `#about` | `section.sec` | 소개·통계 | `blockquote.pull`(`mark.hl`), `.copy`, `.stats > .stat`(`[data-count]` 숫자, `.sub2`, `.asof`) |
+| `#about` | `section.sec` | 소개·통계 | `blockquote.pull`(`mark.hl`), `.copy`, `.stats > .stat`(`[data-count]` 숫자 타일 3개) |
 | `#projects` | `section.sec` | 프로젝트 6개 | `article.row` 6개(아래 3절). 순서: 2D Workbench, Labeling Studio, 3D Studio, Machine Studio, Vision SDK, Raw Buffer Visualizer |
 | `#ecosystem` | `section.sec` | 구성도(메뉴 이름 Overview/구성도) | `.eco#eco`: `svg.eco-svg`(`path.e.s` 실선, `path.e.x` 점선), 노드 `.nd`(`#n-concept #n-machine #n-inputs #n-sdk #n-2d #n-3d #n-lab #n-results #n-decision`), `.legend`, `.purpose` |
 | `#skills` | `section.sec` | 기술 4카드 + 칩 | `.skills > article.sk.reveal` 4개, `.kw > .chips` |
@@ -64,7 +64,7 @@ article.row
 | `data-aria` | `.seg`, `#theme`, `#motion`, `#burger`, `.thumbs` | `aria-label`의 종류: `lang`, `theme`, `motion`, `menu`, `media` | `setLang()`이 언어별 문구(`ARIA` 객체)를 넣는다(`motion`은 `title`도) |
 | `data-lang` | EN·KO 버튼 | 대상 언어 | 클릭 시 `setLang(l, true)`. `aria-pressed` 갱신 |
 | `data-stagger` | `.copy`, `.stats`, `.skills`, `.lat` 등 | 자식 `.reveal`에 지연 부여 | `--rd`를 `min(i*100, 600)ms`로 설정 |
-| `data-count` | `.num > span`, `.sub2` 안 숫자 | 카운터 대상 | 화면에 60% 보이면 1.1초 카운트업 후 원래 문자열 복원 |
+| `data-count` | `.num > span` | 카운터 대상 | 화면에 60% 보이면 1.1초 카운트업 후 원래 문자열 복원 |
 | `data-vw` | `.vw` | 미디어 뷰어 루트 | `viewer()`로 초기화 |
 | `data-gif` | `img.m` | 재생용 GIF 경로 | 위 3절 |
 | `data-for` | `.vnote` | 이 문구를 보일 미디어 인덱스 | `apply()` |
@@ -153,7 +153,7 @@ article.row
 - 썸네일은 `aria-labelledby`로 캡션 이름을 쓰고, 키보드(←→ Home End)로 이동한다. 이미지 `alt`는 현재 언어 캡션과 같다(`syncAlt`).
 - 코드 탭은 `tabindex=0`, `role=region`.
 - `html.still`: `prefers-reduced-motion`이거나 사용자가 `#motion`으로 끄면 켜져서 진입 모션·스캔선·구성도 그리기·코드 줄 등장을 최종 상태로 풀고 원칙 구간을 정적 목록으로 접는다. 영상에는 `controls`가 붙는다. 작성 시점에는 로드 시점에만 판단하고 이후 변경을 구독하지 않았으나, 작성 말미 스냅샷에서는 `#motion` 토글과 OS 설정 `change` 구독이 있다.
-- 포커스 표시(`:focus-visible`), `.sr` 텍스트(Star 아이콘 옆 "GitHub stars"), 색 대비(원칙 줄 꺼진 상태 불투명도 하한 .5로 대비 확보).
+- 포커스 표시(`:focus-visible`), 색 대비(원칙 줄 꺼진 상태 불투명도 하한 .5로 대비 확보).
 
 ## 8. 알려진 한계
 

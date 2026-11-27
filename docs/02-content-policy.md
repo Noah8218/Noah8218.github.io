@@ -33,7 +33,7 @@
 - 사용자가 지정한 문구: About 인용문, Overview 목적 문단, Contact 큰 문구, 히어로 한국어 인사(상세: [07-copy-audit.md](07-copy-audit.md)의 A2, B, E1, H1).
 - 영어 원문을 쓸 때는 문장을 줄이거나 다듬어도 안 된다. 고치려면 사용자 승인을 받고 `data-ed`를 붙이고 `07-copy-audit.md`에 전/후를 남긴다.
 - README 문장이 영어 편집 눈으로 어색해도(예: 릴리스 노트의 명령형·과거형·명사구 혼재) **출처 규칙이 우선**한다. 고칠지는 사용자가 정한다.
-- 허용 라벨(작성 시점): `Skip to content`, `EN`, `KO`, `Skills`, `Contact`, `Hello, I'm`, `Scroll`, `open-source projects`, `GitHub stars`, `GitHub stars as of`, `as of`, `Technologies`, `Get it`, 그리고 Contact 큰 문구 한 문장. 최신 목록은 `tools/allowed_labels.txt`.
+- 허용 라벨(작성 시점): `Skip to content`, `EN`, `KO`, `Skills`, `Contact`, `Hello, I'm`, `Scroll`, `open-source projects`, `Technologies`, `Get it`, 그리고 Contact 큰 문구 한 문장. 최신 목록은 `tools/allowed_labels.txt`.
 
 ### 금지 표현 (AI 티)
 
@@ -63,18 +63,14 @@
 
 | 수치 | 값 | 규칙 |
 |---|---|---|
-| GitHub Star 합계 | 41 (OpenVisionLab 15, Labeling Studio 6, 3D Studio 5, Machine Studio 1, Vision SDK 10, Raw Buffer Visualizer 4) | **2026-11-27 고정값.** 기준일(`as of`)을 항상 함께 표시한다 |
-| GitHub 팔로워 | 90 | 같은 기준일 |
+| GitHub Star·팔로워 | 표시하지 않음 | 사용자 결정(2026-11-27). 기록용 수치는 `docs/sources/stats.md`. 다시 넣으려면 먼저 묻는다 |
 | 경력 | 8년, 장비 프로젝트 20개 이상, 오픈소스 프로젝트 6개 | 사용자가 제공한 값. 임의로 바꾸지 않는다 |
 | 버전 | 프로젝트마다 소스 버전과 게시본 버전이 다를 수 있다 | `Source version`과 `Version`을 구분해 쓰고, 게시본(ZIP, Marketplace)이 소스보다 오래됐으면 그 문장을 지우지 않는다 |
 | 성능·정확도(mAP, ms 등) | 현재 사이트에는 싣지 않는다 | 싣는다면 README 문장 그대로 + 한계 문장 동반. **화면에서만 읽은 값은 성능 주장으로 쓰지 않는다** |
 
-**기준일 표시 위치**: About 통계 카드의 `as of`와 Projects 제목 옆 `GitHub stars as of`(둘 다 `<time datetime="2026-11-27">`).
-
 **갱신 방법**
 1. `python tools/fetch_sources.py`로 README·메타 사본을 새로 받는다(`--dry-run`으로 미리 확인). `docs/sources/stats.md`(Star·팔로워·라이선스)는 손으로 쓴 문서라 덮어쓰지 않으므로 GitHub 화면에서 값을 읽어 직접 고친다.
-2. `index.html`에서 `data-count`가 있는 합계(41)와 팔로워(90), 프로젝트별 `★ N` 칩, 두 개의 `<time datetime>` 날짜를 바꾼다. 합계 = 6개 칩의 합인지 확인한다.
-3. `python tools/check_site.py`로 근거 대조를 다시 한다.
+2. `python tools/check_site.py`로 근거 대조를 다시 한다.
 
 ## 6. 한계 문장을 약하게 만들지 않는 규칙
 
