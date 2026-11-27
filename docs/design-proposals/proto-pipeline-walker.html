@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Q2 prototype 1 - Pipeline walker (2D Workbench)</title>
+<!--
+  Concept prototype, single file, no dependencies, no network requests.
+  Idea: scan beam reveals the real screenshot, then a spotlight + corner brackets walk the pipeline steps
+  (Original -> Filter -> Threshold -> Morphology -> Blob -> Contour -> verdict) in sync with a step rail and a readout.
+  Facts shown (layer names, ms, 34 items, 2/2 judged OK) are read from assets/ovl-inspection-stages.webp only.
+  Flow arrows are drawn only where the visible card sub-labels show the layer chain (steps 01-03).
+  URL params for capture: ?step=N  ?still=1  ?lang=ko  ?theme=light  ?nointro=1
+  Port to the site: replace SHOT with "assets/ovl-inspection-stages.webp", copy the CSS block + IIFE, keep the .vw/.frame/.bar markup.
+-->
+<style>
+:root{
+  --ease:cubic-bezier(.2,.7,.3,1);
+  --pad:clamp(16px,4vw,48px);
+  --font:ui-sans-serif,system-ui,"Segoe UI","Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+  --k:.7; /* px per viewBox unit, written by JS so SVG strokes keep a constant pixel width */
+}
+[data-theme=dark]{color-scheme:dark;--bg:#090c0e;--card:#12181c;--fg:#e9eef0;--muted:#9aa8b0;--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.2);--accent:#2dd4bf;--on-accent:#04201c;--stage:#06090b;--aline:rgba(45,212,191,.5)}
+[data-theme=light]{color-scheme:light;--bg:#f5f7f7;--card:#fff;--fg:#0c1316;--muted:#475861;--line:rgba(12,19,22,.12);--line2:rgba(12,19,22,.24);--accent:#0b766f;--on-accent:#fff;--stage:#dde4e6;--aline:rgba(11,118,111,.5)}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.6 var(--font);-webkit-font-smoothing:antialiased;word-break:keep-all}
+h1,p,dl,dd,ol{margin:0}ol{padding:0;list-style:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{width:min(1200px,calc(100% - 2*var(--pad)));margin:0 auto;padding:clamp(28px,5vw,56px) 0 64px}
+.tools{display:flex;justify-content:flex-end;gap:8px;margin-bottom:18px}
+.tb{min-width:40px;height:34px;padding:0 12px;border:1px solid var(--line2);border-radius:999px;background:transparent;cursor:pointer;font-size:.85rem;font-weight:700;letter-spacing:.04em}
+.tb[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+.no{margin-bottom:8px;font:700 1rem var(--mono);letter-spacing:.1em;color:var(--accent)}
+h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;margin-bottom:12px}
+.desc{max-width:40em;margin-bottom:26px;color:var(--muted);font-size:1.1rem}
+
+/* viewer frame: same shell as the site's .frame/.bar/.stage */
+.frame{position:relative;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:var(--card)}
+.bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-bottom:1px solid var(--line)}
+.bar i{width:10px;height:10px;border-radius:50%;background:var(--line2)}
+.stage{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--stage);touch-action:pan-y}
+.stage>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+/* in-stage drawing uses a fixed bright accent: the screenshot is dark in both themes */
+#ov{--a:45,212,191}
+.dim{fill:rgb(3,6,8);fill-opacity:.74;transition:fill-opacity .5s var(--ease)}
+[data-phase=intro] .dim{fill-opacity:.93}
+.br{fill:none;stroke:rgb(var(--a));stroke-width:calc(2.6/var(--k));stroke-linecap:square;stroke-linejoin:miter}
+.br.e{stroke-width:calc(1.8/var(--k));stroke-opacity:.9}
+.out{fill:none;stroke:rgba(var(--a),.7);stroke-width:calc(1.4/var(--k));stroke-dasharray:calc(7/var(--k)) calc(6/var(--k))}
+.halo{fill:none;stroke:rgba(0,0,0,.6);stroke-width:calc(7/var(--k));stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.flow{fill:none;stroke:rgb(var(--a));stroke-width:calc(3/var(--k));stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.flow.go,.halo.go{animation:draw .6s var(--ease) .32s both}
+.head{fill:rgb(var(--a));opacity:0}
+.head.go{animation:fadein .2s linear .85s both}
+.beam{fill:rgb(var(--a))}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}65%{transform:scale(1.22);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+
+.badge{position:absolute;left:calc(var(--bx,0) / 16 * 1%);top:calc(var(--by,0) / 9 * 1%);z-index:3;display:grid;place-items:center;min-width:28px;height:28px;padding:0 8px;margin:-14px 0 0 -14px;border-radius:999px;background:#2dd4bf;color:#04201c;font:800 .8rem/1 var(--mono);letter-spacing:.02em;pointer-events:none;box-shadow:0 0 0 3px rgba(3,6,8,.7);opacity:0;transform-origin:50% 50%}
+.badge.on{opacity:1}
+.badge.pop{animation:pop .45s var(--ease) both}
+.hot{position:absolute;z-index:4;padding:0;border:0;background:transparent;cursor:pointer;border-radius:6px}
+.hot:hover{outline:1.5px dashed rgba(45,212,191,.75);outline-offset:-1px}
+
+/* rail: dotted progress line + moving dot (same motif as the user's slide decks) */
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 6px}
+.ib{display:inline-grid;place-items:center;width:40px;height:40px;border:1px solid var(--line2);border-radius:50%;background:transparent;cursor:pointer;transition:border-color .25s,color .25s,transform .25s var(--ease)}
+.ib:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.ib:active:not(:disabled){transform:scale(.92)}
+.ib:disabled{opacity:.35;cursor:default}
+.ib svg{width:18px;height:18px;fill:currentColor}
+.hint{margin-left:auto;color:var(--muted);font:.85rem var(--mono)}
+.rail{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));margin-top:8px;padding-top:2px}
+.rail::before,.rail .fill{content:"";position:absolute;left:calc(100%/14);right:calc(100%/14);top:21px;height:2px}
+.rail::before{background:repeating-linear-gradient(90deg,var(--aline) 0 6px,transparent 6px 12px)}
+.rail .fill{background:var(--accent);transform-origin:0 50%;transform:scaleX(var(--f,0));transition:transform .6s var(--ease)}
+.rail .dot{position:absolute;top:13px;left:calc(100%/14 + (100% - 100%/7) * var(--f,0));width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--bg);transition:left .6s var(--ease)}
+.rail .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--accent);opacity:0}
+.rail .dot.ping::after{animation:ping .9s ease-out}
+.rail li{position:relative;z-index:1;display:flex;justify-content:center}
+.rail button{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:44px;padding:0 4px 4px;border:0;background:transparent;cursor:pointer;color:var(--muted);transition:color .25s}
+.rail button b{display:grid;place-items:center;width:40px;height:40px;border:2px solid var(--line2);border-radius:50%;background:var(--bg);font:700 .85rem var(--mono);letter-spacing:.02em;transition:border-color .3s,background-color .3s,color .3s,transform .4s var(--ease)}
+.rail button span{font-size:.85rem;font-weight:600;line-height:1.2;text-align:center}
+.rail button.done b{border-color:var(--accent);color:var(--accent)}
+.rail button[aria-current=step]{color:var(--fg)}
+.rail button[aria-current=step] b{border-color:var(--accent);background:var(--accent);color:var(--on-accent);transform:scale(1.08)}
+.rail button:hover b{border-color:var(--accent)}
+
+/* readout */
+.readout{display:flex;flex-wrap:wrap;margin-top:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.readout>div{flex:1 1 150px;padding:16px 20px;border-left:1px solid var(--line)}
+.readout>div:first-child{flex:1.6 1 260px;border-left:0}
+.readout dt{margin-bottom:4px;color:var(--muted);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+html[lang=ko] .readout dt{letter-spacing:0}
+.readout dd{font-size:1.05rem;font-weight:600;overflow-wrap:anywhere}
+.readout .t{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.readout .mono{font-family:var(--mono);font-weight:600}
+.readout [hidden]{display:none}
+.res{display:inline-block;margin-left:10px;padding:1px 12px;border:1px solid var(--line2);border-radius:999px;font:700 .85rem/1.6 var(--mono);vertical-align:middle;transform-origin:0 50%}
+.res.ok{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.res.pop{animation:pop .5s var(--ease) both}
+.note{margin-top:14px;color:var(--muted);font-size:.9rem}
+
+html.still *,html.still *::before,html.still *::after{animation:none!important;transition:none!important}
+html.still .flow,html.still .halo{stroke-dashoffset:0}
+html.still .head{opacity:1}
+@media (max-width:720px){
+  .readout>div{flex:1 1 40%;border-left:0;border-top:1px solid var(--line)}
+  .readout>div:first-child{flex:1 1 100%;border-top:0}
+  .hint{display:none}
+  .rail button span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} /* names stay available to screen readers; the readout shows the title */
+  .rail button b{width:34px;height:34px;font-size:.75rem}
+  .rail::before,.rail .fill{top:18px}.rail .dot{top:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tools">
+    <button class="tb" type="button" id="bl" aria-pressed="false">KO</button>
+    <button class="tb" type="button" id="bt" aria-pressed="false">Light</button>
+  </div>
+  <p class="no">01</p>
+  <h1>2D Workbench</h1>
+  <p class="desc" id="desc"></p>
+
+  <section class="vw" id="vw" aria-labelledby="vwlabel">
+    <h2 id="vwlabel" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></h2>
+    <div class="frame">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="stage" id="stage" data-phase="idle">
+        <img id="shot" src="../../assets/ovl-inspection-stages.webp" width="1600" height="900" alt="">
+        <svg id="ov" viewBox="0 0 1600 900" aria-hidden="true" focusable="false">
+          <defs>
+            <mask id="mk" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900">
+              <rect width="1600" height="900" fill="#fff"/>
+              <rect id="h0" rx="8" fill="#000"/><rect id="h1" rx="8" fill="#4a4a4a"/><rect id="h2" rx="6" fill="#000"/><rect id="h3" rx="6" fill="#000"/>
+            </mask>
+            <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(45,212,191)" stop-opacity="0"/><stop offset="1" stop-color="rgb(45,212,191)" stop-opacity=".28"/></linearGradient>
+          </defs>
+          <rect class="dim" width="1600" height="900" mask="url(#mk)"/>
+          <rect id="o1" class="out"/>
+          <path id="b2" class="br e"/><path id="b3" class="br e"/>
+          <path id="b0" class="br"/>
+          <path id="fh" class="halo" pathLength="1"/><path id="flow" class="flow" pathLength="1"/><path id="head" class="head"/>
+          <rect id="bg" x="0" width="1600" height="90" fill="url(#gl)" visibility="hidden"/>
+          <rect id="bm" class="beam" x="0" width="1600" height="3" visibility="hidden"/>
+        </svg>
+        <span class="badge" id="badge"></span>
+      </div>
+    </div>
+
+    <div class="ctl">
+      <button class="ib" type="button" id="prev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 5l-9 7 9 7z"/></svg></button>
+      <button class="ib" type="button" id="play" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playico" d="M8 5v14l11-7z"/></svg></button>
+      <button class="ib" type="button" id="next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 5l9 7-9 7z"/></svg></button>
+      <button class="ib" type="button" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button>
+      <span class="hint" id="hint"></span>
+    </div>
+    <ol class="rail" id="rail" role="group">
+      <i class="fill" id="fill"></i><i class="dot" id="dot"></i>
+    </ol>
+
+    <dl class="readout" id="ro" aria-live="polite">
+      <div><dt id="l-step"></dt><dd class="t"><span id="r-title"></span><span class="res" id="r-res"></span></dd></div>
+      <div id="c-tool"><dt id="l-tool"></dt><dd id="r-tool"></dd></div>
+      <div id="c-io"><dt id="l-io"></dt><dd class="mono" id="r-io"></dd></div>
+      <div id="c-val"><dt id="l-val"></dt><dd class="mono" id="r-val"></dd></div>
+      <div id="c-time"><dt id="l-time"></dt><dd class="mono" id="r-time"></dd></div>
+    </dl>
+    <p class="note" id="note"></p>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var D = document, W = window, H = D.documentElement, q = new URLSearchParams(location.search);
+  function $(s) { return D.querySelector(s); }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  var still = W.matchMedia('(prefers-reduced-motion: reduce)').matches || q.has('still');
+  if (still) H.classList.add('still');
+  var lang = q.get('lang') === 'ko' ? 'ko' : 'en';
+  H.dataset.theme = q.get('theme') === 'light' ? 'light' : 'dark';
+
+  /* --- regions in screenshot pixels (1600x900), measured on assets/ovl-inspection-stages.webp --- */
+  var R = {
+    vTL: [306, 132, 638, 234], vTR: [951, 132, 639, 234], vBL: [306, 373, 638, 234], vBR: [951, 373, 639, 234],
+    c1: [13, 204, 272, 72], c2: [13, 280, 272, 73], c3: [13, 358, 272, 72], c4: [13, 435, 272, 42],
+    r2: [310, 719, 545, 31], r3: [310, 750, 545, 31], r4: [310, 781, 545, 31], r5: [310, 812, 545, 31],
+    ver: [13, 486, 272, 43]
+  };
+  /* t = target, s = source, e = extra highlights; flow only where the visible card sub-labels show the layer chain */
+  var S = [
+    { t: R.vTL, s: null, e: [], flow: false, ba: 'tl' },
+    { t: R.vBR, s: R.vTL, e: [R.c1], flow: true, ba: 'tl' },
+    { t: R.vTR, s: R.vBR, e: [R.c2, R.r2], flow: true, ba: 'tl' },
+    { t: R.vBL, s: R.vTR, e: [R.c3, R.r3], flow: true, ba: 'tl' },
+    { t: R.r4, s: null, e: [R.c4], flow: false, ba: 'lm' },
+    { t: R.r5, s: null, e: [], flow: false, ba: 'lm' },
+    { t: R.ver, s: null, e: [R.r4, R.r5], flow: false, ba: 'tr' }
+  ];
+  /* readout data: only values visible in the screenshot */
+  var DATA = [
+    { n: 'IN', tool: null, io: 'Original', val: 'HolePlate.png · 960×720', time: null, res: null },
+    { n: '01', title: 'Median Filter', tool: 'Filter', io: 'Original → Hole_Filtered', val: null, time: '23 ms', res: 'Done' },
+    { n: '02', title: 'Bright Hole Binary', tool: 'Threshold', io: 'Hole_Filtered → Hole_Binary', val: 'Binary · Threshold 170', time: '9.3 ms', res: 'Done' },
+    { n: '03', title: 'Morphology Open', tool: 'Morphology', io: 'Hole_Binary → Hole_Clean', val: '960 × 720 px', time: '3.2 ms', res: 'Done' },
+    { n: '04', title: 'Hole Blob Count', tool: 'Blob', io: null, val: '34 items', count: 34, time: '15 ms', res: 'OK' },
+    { n: '05', title: 'Hole Contours', tool: 'Contour', io: null, val: '34 items', count: 34, time: '12 ms', res: 'OK' },
+    { n: 'OK', tool: null, io: null, val: '2/2 judged steps OK', time: '585 ms', res: 'OK' }
+  ];
+  var T = {
+    en: {
+      desc: 'Build and validate rule-based 2D inspection Recipes on Windows with OpenCvSharp 4 and C#.',
+      alt: '2D Workbench running the Hole Array pipeline: Original, Hole_Filtered, Hole_Binary and Hole_Clean layers in a 4-up view, with step results below.',
+      label: 'Pipeline walkthrough on the 2D Workbench screen',
+      rail: ['Original', 'Filter', 'Threshold', 'Morphology', 'Blob', 'Contour', 'Verdict'],
+      t0: 'Input', t6: 'Final verdict',
+      lstep: 'Step', ltool: 'Tool', lio: 'Layers', lval: 'Value', lval6: 'Result', ltime: 'Time',
+      prev: 'Previous step', next: 'Next step', play: 'Auto-play', pause: 'Pause', replay: 'Replay the scan',
+      hint: '← → step · Space play/pause · 0–6 jump', rcap: 'Pipeline run', other: 'Values are read from the captured screen.',
+      step: function (i, n) { return 'Step ' + (i + 1) + ' of ' + n; }
+    },
+    ko: {
+      desc: 'Windows에서 OpenCvSharp 4와 C#으로 규칙 기반 2D 검사 Recipe를 구성하고 검증하는 도구입니다.',
+      alt: 'Hole Array 파이프라인을 실행한 2D Workbench 화면: 원본, Hole_Filtered, Hole_Binary, Hole_Clean Layer를 4분할로 보고 아래에서 단계별 결과를 확인합니다.',
+      label: '2D Workbench 화면의 파이프라인 단계 보기',
+      rail: ['원본', 'Filter', 'Threshold', 'Morphology', 'Blob', 'Contour', '판정'],
+      t0: '입력', t6: '최종 판정',
+      lstep: '단계', ltool: '툴', lio: 'Layer', lval: '값', lval6: '결과', ltime: '시간',
+      prev: '이전 단계', next: '다음 단계', play: '자동 재생', pause: '일시정지', replay: '스캔 다시 보기',
+      hint: '← → 단계 · Space 재생/정지 · 0–6 이동', rcap: '파이프라인 실행', other: '표시한 값은 캡처 화면에서 읽은 값입니다.',
+      step: function (i, n) { return n + '단계 중 ' + (i + 1) + '단계'; }
+    }
+  };
+
+  /* --- elements --- */
+  var stage = $('#stage'), ov = $('#ov'), badge = $('#badge');
+  var holes = [0, 1, 2, 3].map(function (i) { return $('#h' + i); });
+  var b0 = $('#b0'), b2 = $('#b2'), b3 = $('#b3'), o1 = $('#o1');
+  var flow = $('#flow'), fh = $('#fh'), head = $('#head'), bm = $('#bm'), bg = $('#bg');
+  var rail = $('#rail'), fillEl = $('#fill'), dot = $('#dot');
+  var btnPlay = $('#play'), btnPrev = $('#prev'), btnNext = $('#next'), btnReplay = $('#replay');
+  var step = clamp(parseInt(q.get('step'), 10) || 0, 0, 6);
+  var cur = [], tgt = [], raf = 0, last = 0, introOn = false, introRaf = 0, playing = false, timer = 0, touched = false, started = false;
+  for (var i = 0; i < 4; i++) { cur.push({ x: 800, y: 450, w: 0, h: 0 }); tgt.push({ x: 800, y: 450, w: 0, h: 0 }); }
+
+  /* --- rail buttons --- */
+  var railBtns = [];
+  for (i = 0; i < 7; i++) {
+    var li = D.createElement('li'), bt = D.createElement('button'), b = D.createElement('b'), sp = D.createElement('span');
+    bt.type = 'button'; bt.tabIndex = -1; bt.appendChild(b); bt.appendChild(sp); li.appendChild(bt); rail.appendChild(li);
+    b.textContent = DATA[i].n; railBtns.push(bt);
+    (function (k) { bt.addEventListener('click', function () { user(); go(k); }); })(i);
+  }
+
+  /* --- drawing --- */
+  function corners(r, l) {
+    l = Math.min(l, r.w / 3, r.h / 3);
+    var x = r.x, y = r.y, X = x + r.w, Y = y + r.h;
+    return 'M' + x + ' ' + (y + l) + 'V' + y + 'H' + (x + l) + 'M' + (X - l) + ' ' + y + 'H' + X + 'V' + (y + l) + 'M' + X + ' ' + (Y - l) + 'V' + Y + 'H' + (X - l) + 'M' + (x + l) + ' ' + Y + 'H' + x + 'V' + (Y - l);
+  }
+  function draw() {
+    for (var i = 0; i < 4; i++) {
+      var c = cur[i], on = c.w > 2 && c.h > 2;
+      holes[i].setAttribute('x', c.x); holes[i].setAttribute('y', c.y);
+      holes[i].setAttribute('width', Math.max(0, c.w)); holes[i].setAttribute('height', Math.max(0, c.h));
+      if (i === 0) b0.setAttribute('d', on && !introOn ? corners(c, 26) : '');
+      if (i === 1) { o1.setAttribute('x', c.x); o1.setAttribute('y', c.y); o1.setAttribute('width', Math.max(0, c.w)); o1.setAttribute('height', Math.max(0, c.h)); o1.style.display = on && !introOn ? '' : 'none'; }
+      if (i === 2) b2.setAttribute('d', on ? corners(c, 16) : '');
+      if (i === 3) b3.setAttribute('d', on ? corners(c, 16) : '');
+    }
+    var c0 = cur[0], m = S[step].ba; // badge sits on a corner/edge that does not hide the on-screen text
+    badge.style.setProperty('--bx', (m === 'lm' ? c0.x - 12 : m === 'tr' ? c0.x + c0.w - 8 : c0.x + 4).toFixed(1));
+    badge.style.setProperty('--by', (m === 'lm' ? c0.y + c0.h / 2 : c0.y + 6).toFixed(1));
+  }
+  function tick(ts) {
+    var dt = Math.min(0.05, (ts - last) / 1000 || 0.016), k = 1 - Math.exp(-dt * 11), moving = false;
+    last = ts;
+    for (var i = 0; i < 4; i++) ['x', 'y', 'w', 'h'].forEach(function (p) {
+      var d = tgt[i][p] - cur[i][p];
+      if (Math.abs(d) > 0.3) { cur[i][p] += d * k; moving = true; } else cur[i][p] = tgt[i][p];
+    });
+    draw();
+    raf = moving ? requestAnimationFrame(tick) : 0; // idle = no frames at all
+  }
+  function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }
+
+  function setTargets(i, snap) {
+    var s = S[i], list = [s.t, s.s, s.e[0], s.e[1]];
+    list.forEach(function (r, n) {
+      var c = cur[n];
+      if (r) {
+        tgt[n] = { x: r[0], y: r[1], w: r[2], h: r[3] };
+        if (c.w < 1 && c.h < 1) cur[n] = { x: r[0] + r[2] / 2, y: r[1] + r[3] / 2, w: 0, h: 0 }; // grow in place
+      } else tgt[n] = { x: c.x + c.w / 2, y: c.y + c.h / 2, w: 0, h: 0 }; // shrink in place
+      if (snap) cur[n] = { x: tgt[n].x, y: tgt[n].y, w: tgt[n].w, h: tgt[n].h };
+    });
+    if (snap) draw(); else kick();
+  }
+
+  /* flow arrow between panel centers (only steps 01-03) */
+  function setFlow(i) {
+    var s = S[i], restart = function (el, cls) { el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); };
+    flow.classList.remove('go'); fh.classList.remove('go'); head.classList.remove('go');
+    if (!s.flow || !s.s) { flow.setAttribute('d', ''); fh.setAttribute('d', ''); head.setAttribute('d', ''); return; }
+    var a = s.s, t = s.t, ax = a[0] + a[2] / 2, ay = a[1] + a[3] / 2, tx = t[0] + t[2] / 2, ty = t[1] + t[3] / 2;
+    var dx = tx - ax, dy = ty - ay, len = Math.sqrt(dx * dx + dy * dy), ux = dx / len, uy = dy / len;
+    var x1 = ax + ux * 70, y1 = ay + uy * 40, x2 = tx - ux * 70, y2 = ty - uy * 46;
+    var nx = -uy, ny = ux, cx = (x1 + x2) / 2 + nx * 34, cy = (y1 + y2) / 2 + ny * 34;
+    var d = 'M' + x1.toFixed(1) + ' ' + y1.toFixed(1) + 'Q' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ' ' + x2.toFixed(1) + ' ' + y2.toFixed(1);
+    flow.setAttribute('d', d); fh.setAttribute('d', d);
+    var ex = x2 - cx, ey = y2 - cy, el = Math.sqrt(ex * ex + ey * ey); ex /= el; ey /= el;
+    var px = -ey, py = ex, L = 30, Wd = 15;
+    head.setAttribute('d', 'M' + (x2 + ex * 10).toFixed(1) + ' ' + (y2 + ey * 10).toFixed(1) + 'L' + (x2 - ex * L + px * Wd).toFixed(1) + ' ' + (y2 - ey * L + py * Wd).toFixed(1) + 'L' + (x2 - ex * L - px * Wd).toFixed(1) + ' ' + (y2 - ey * L - py * Wd).toFixed(1) + 'Z');
+    restart(flow, 'go'); restart(fh, 'go'); restart(head, 'go');
+  }
+
+  /* --- readout --- */
+  var countRaf = 0;
+  function render(i) {
+    var d = DATA[i], t = T[lang], title = d.title || (i === 0 ? t.t0 : t.t6);
+    $('#l-step').textContent = t.lstep + ' ' + d.n;
+    $('#r-title').textContent = title;
+    var res = $('#r-res'); res.textContent = d.res || ''; res.hidden = !d.res; res.className = 'res' + (d.res === 'OK' ? ' ok' : '');
+    if (d.res && !still) { void res.offsetWidth; res.classList.add('pop'); }
+    $('#l-tool').textContent = t.ltool; $('#l-io').textContent = t.lio; $('#l-val').textContent = i === 6 ? t.lval6 : t.lval;
+    $('#l-time').textContent = i === 6 ? t.rcap : t.ltime;
+    $('#c-tool').hidden = !d.tool; $('#r-tool').textContent = d.tool || '';
+    $('#c-io').hidden = !d.io; $('#r-io').textContent = d.io || '';
+    $('#c-time').hidden = !d.time; $('#r-time').textContent = d.time || '';
+    var vv = $('#r-val'); $('#c-val').hidden = !d.val;
+    cancelAnimationFrame(countRaf);
+    if (d.count && !still) {
+      var t0 = null;
+      (function f(ts) { t0 = t0 || ts; var p = clamp((ts - t0) / 700, 0, 1), e = 1 - Math.pow(1 - p, 3); vv.textContent = Math.round(d.count * e) + ' items'; if (p < 1) countRaf = requestAnimationFrame(f); })(performance.now());
+    } else vv.textContent = d.val || '';
+    badge.textContent = d.n; badge.classList.add('on'); badge.classList.remove('pop');
+    if (!still) { void badge.offsetWidth; badge.classList.add('pop'); }
+    railBtns.forEach(function (b, k) {
+      b.classList.toggle('done', k < i);
+      if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      b.tabIndex = k === i ? 0 : -1;
+    });
+    dot.classList.remove('ping');
+    if (!still) { void dot.offsetWidth; dot.classList.add('ping'); }
+    rail.style.setProperty('--f', (i / 6).toFixed(4));
+    btnPrev.disabled = i === 0; btnNext.disabled = i === 6;
+  }
+  function go(i) {
+    step = clamp(i, 0, 6);
+    if (introOn) return;
+    setTargets(step, still); setFlow(step); render(step);
+  }
+
+  /* --- intro: the beam reveals the dimmed screenshot, then the spotlight closes in on step 0 --- */
+  function intro(done) {
+    if (still || q.has('nointro')) { go(step); if (done) done(); return; }
+    cancelAnimationFrame(introRaf);
+    introOn = true; stage.dataset.phase = 'intro'; badge.classList.remove('on', 'pop');
+    flow.setAttribute('d', ''); fh.setAttribute('d', ''); head.setAttribute('d', '');
+    for (var n = 1; n < 4; n++) cur[n] = tgt[n] = { x: 800, y: 450, w: 0, h: 0 };
+    bm.setAttribute('visibility', 'visible'); bg.setAttribute('visibility', 'visible');
+    var t0 = null, dur = parseInt(q.get('introms'), 10) || 1500; // ?introms=8000 slows the sweep for inspection
+    (function f(ts) {
+      t0 = t0 || ts; var p = clamp((ts - t0) / dur, 0, 1), e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2, y = 900 * e;
+      cur[0] = tgt[0] = { x: 0, y: 0, w: 1600, h: y };
+      bm.setAttribute('y', Math.max(0, y - 1.5)); bg.setAttribute('y', Math.max(0, y - 90));
+      draw();
+      if (p < 1) introRaf = requestAnimationFrame(f);
+      else {
+        bm.setAttribute('visibility', 'hidden'); bg.setAttribute('visibility', 'hidden');
+        introRaf = 0; introOn = false; stage.dataset.phase = 'run'; cur[0] = { x: 0, y: 0, w: 1600, h: 900 };
+        go(step); if (done) done();
+      }
+    })(performance.now());
+  }
+
+  /* --- autoplay: one pass, stops on any user input, never loops --- */
+  function setPlaying(v) {
+    playing = v; clearTimeout(timer);
+    btnPlay.setAttribute('aria-pressed', v);
+    btnPlay.setAttribute('aria-label', v ? T[lang].pause : T[lang].play);
+    $('#playico').setAttribute('d', v ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M8 5v14l11-7z');
+    if (v) schedule();
+  }
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () { if (step < 6) { go(step + 1); schedule(); } else setPlaying(false); }, 2800);
+  }
+  function user() { touched = true; if (playing) setPlaying(false); }
+
+  btnPrev.addEventListener('click', function () { user(); go(step - 1); });
+  btnNext.addEventListener('click', function () { user(); go(step + 1); });
+  btnPlay.addEventListener('click', function () {
+    touched = true;
+    if (playing) { setPlaying(false); return; }
+    if (step >= 6) go(0);
+    setPlaying(true);
+  });
+  btnReplay.addEventListener('click', function () { touched = true; setPlaying(false); step = 0; intro(function () { }); });
+  $('#vw').addEventListener('keydown', function (e) {
+    var k = e.key, n = -1;
+    if (k === 'ArrowRight' || k === 'ArrowDown') n = step + 1;
+    else if (k === 'ArrowLeft' || k === 'ArrowUp') n = step - 1;
+    else if (k === 'Home') n = 0; else if (k === 'End') n = 6;
+    else if (/^[0-6]$/.test(k)) n = +k;
+    else if (k === ' ' && e.target === railBtns[step]) { e.preventDefault(); btnPlay.click(); return; }
+    if (n < 0) return;
+    e.preventDefault(); user(); go(n);
+    if (rail.contains(D.activeElement)) railBtns[step].focus();
+  });
+  $('#vw').addEventListener('pointerdown', function (e) { if (!btnPlay.contains(e.target)) user(); });
+
+  /* --- hotspots: click a region of the screenshot to jump to the step that owns it --- */
+  var HOT = [['vTL', 0], ['vBR', 1], ['vTR', 2], ['vBL', 3], ['c1', 1], ['c2', 2], ['c3', 3], ['c4', 4], ['r2', 2], ['r3', 3], ['r4', 4], ['r5', 5], ['ver', 6]];
+  HOT.forEach(function (h) {
+    var r = R[h[0]], b = D.createElement('button');
+    b.type = 'button'; b.className = 'hot'; b.tabIndex = -1; b.setAttribute('aria-hidden', 'true');
+    b.style.left = (r[0] / 16) + '%'; b.style.top = (r[1] / 9) + '%'; b.style.width = (r[2] / 16) + '%'; b.style.height = (r[3] / 9) + '%';
+    b.addEventListener('click', function () { user(); go(h[1]); });
+    stage.appendChild(b);
+  });
+
+  /* --- stroke scale for SVG overlay (px per unit) --- */
+  function scaleK() { ov.style.setProperty('--k', (stage.clientWidth / 1600).toFixed(4)); }
+  if (W.ResizeObserver) new ResizeObserver(scaleK).observe(stage); else W.addEventListener('resize', scaleK);
+
+  /* --- language / theme (prototype only) --- */
+  function applyLang() {
+    var t = T[lang]; H.lang = lang;
+    $('#desc').textContent = t.desc; $('#shot').alt = t.alt; $('#vwlabel').textContent = t.label; $('#vw').setAttribute('aria-label', t.label);
+    rail.setAttribute('aria-label', t.label);
+    railBtns.forEach(function (b, k) { b.lastChild.textContent = t.rail[k]; });
+    btnPrev.setAttribute('aria-label', t.prev); btnNext.setAttribute('aria-label', t.next); btnReplay.setAttribute('aria-label', t.replay);
+    btnPlay.setAttribute('aria-label', playing ? t.pause : t.play);
+    $('#hint').textContent = t.hint; $('#note').textContent = t.other;
+    $('#bl').textContent = lang === 'ko' ? 'EN' : 'KO'; $('#bl').setAttribute('aria-label', lang === 'ko' ? 'English' : '한국어');
+    $('#bt').textContent = H.dataset.theme === 'light' ? (lang === 'ko' ? '다크' : 'Dark') : (lang === 'ko' ? '라이트' : 'Light');
+    if (!introOn) render(step);
+  }
+  $('#bl').addEventListener('click', function () { lang = lang === 'ko' ? 'en' : 'ko'; applyLang(); });
+  $('#bt').addEventListener('click', function () { H.dataset.theme = H.dataset.theme === 'light' ? 'dark' : 'light'; applyLang(); });
+  if (still) { btnPlay.hidden = true; btnReplay.hidden = true; }
+
+  /* --- start: when 55% visible the first time --- */
+  scaleK(); applyLang();
+  W.__walker = { go: go, intro: intro, play: function () { btnPlay.click(); }, idle: function () { return !raf && !introRaf; }, step: function () { return step; } };
+  if (still || q.has('nointro')) { go(step); started = true; }
+  else {
+    stage.dataset.phase = 'intro'; badge.classList.remove('on', 'pop'); // dimmed, no callout until first seen
+    for (i = 0; i < 4; i++) cur[i] = { x: 800, y: 450, w: 0, h: 0 };
+    draw();
+    var io = new IntersectionObserver(function (en) {
+      var vis = en[0].isIntersecting;
+      if (vis && !started) { started = true; intro(function () { if (!touched) setPlaying(true); }); }
+      if (!vis && playing) setPlaying(false);
+    }, { threshold: 0.55 });
+    io.observe(stage);
+  }
+  D.addEventListener('visibilitychange', function () { if (D.hidden && playing) setPlaying(false); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Q2 prototype 2 - Before/after row-stride slider (Raw Buffer Visualizer)</title>
+<!--
+  Concept prototype, single file, no dependencies, no network requests.
+  Idea: the Raw Buffer Visualizer row already ships two real captures of the same PCB snapshot
+  (rbv-manual-stride-before.webp, rbv-manual-stride-after.webp). A draggable divider turns them into one
+  interaction: the wrong-stride noise and the correct image share the frame, and the Stride / padding fields
+  in the right-hand panel are ringed so cause and effect are read together.
+  Values shown (Stride 3840 -> 3920, padding 0 -> 80 B/row, Row bytes 3,840) are read from the two captures only.
+  Divider: pointer drag anywhere on the stage, role="slider" handle with Arrow/Shift/PageUp/PageDown/Home/End.
+  URL params for capture: ?p=62  ?still=1  ?lang=ko  ?theme=light
+  Port to the site: replace the two src values with "assets/rbv-manual-stride-before.webp" / "...after.webp",
+  copy the CSS block + IIFE; it fits as a 4th thumbnail "Compare" in the existing RBV viewer (.vw).
+-->
+<style>
+:root{
+  --ease:cubic-bezier(.2,.7,.3,1);
+  --pad:clamp(16px,4vw,48px);
+  --font:ui-sans-serif,system-ui,"Segoe UI","Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+  --k:.7;
+}
+[data-theme=dark]{color-scheme:dark;--bg:#090c0e;--card:#12181c;--fg:#e9eef0;--muted:#9aa8b0;--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.2);--accent:#2dd4bf;--on-accent:#04201c;--stage:#06090b;--aline:rgba(45,212,191,.5)}
+[data-theme=light]{color-scheme:light;--bg:#f5f7f7;--card:#fff;--fg:#0c1316;--muted:#475861;--line:rgba(12,19,22,.12);--line2:rgba(12,19,22,.24);--accent:#0b766f;--on-accent:#fff;--stage:#dde4e6;--aline:rgba(11,118,111,.5)}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.6 var(--font);-webkit-font-smoothing:antialiased;word-break:keep-all}
+h1,p,dl,dd,ol{margin:0}ol{padding:0;list-style:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{width:min(1200px,calc(100% - 2*var(--pad)));margin:0 auto;padding:clamp(28px,5vw,56px) 0 64px}
+.tools{display:flex;justify-content:flex-end;gap:8px;margin-bottom:18px}
+.tb{min-width:40px;height:34px;padding:0 12px;border:1px solid var(--line2);border-radius:999px;background:transparent;cursor:pointer;font-size:.85rem;font-weight:700;letter-spacing:.04em}
+.no{margin-bottom:8px;font:700 1rem var(--mono);letter-spacing:.1em;color:var(--accent)}
+h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;margin-bottom:12px}
+.desc{max-width:44em;margin-bottom:26px;color:var(--muted);font-size:1.1rem}
+
+.frame{position:relative;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:var(--card)}
+.bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-bottom:1px solid var(--line)}
+.bar i{width:10px;height:10px;border-radius:50%;background:var(--line2)}
+.stage{position:relative;aspect-ratio:1600/870;overflow:hidden;background:var(--stage);touch-action:pan-y;cursor:ew-resize;user-select:none;-webkit-user-select:none;--p:50%;--pn:50}
+.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;-webkit-user-drag:none}
+.stage .before{clip-path:inset(0 calc(100% - var(--p)) 0 0)}
+
+/* divider + grip */
+.div{position:absolute;inset:0;z-index:5;pointer-events:none}
+.div::before{content:"";position:absolute;top:0;bottom:0;left:var(--p);margin-left:-1px;width:2px;background:var(--acc);box-shadow:0 0 0 1px rgba(3,6,8,.5),0 0 18px rgba(45,212,191,.55)}
+.grip{pointer-events:auto;position:absolute;top:50%;left:clamp(23px,var(--p),calc(100% - 23px));width:46px;height:46px;margin:-23px 0 0 -23px;display:grid;place-items:center;border:2px solid var(--acc);border-radius:50%;background:rgba(6,9,11,.82);color:var(--acc);cursor:grab;padding:0;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.grip:active{cursor:grabbing}
+.grip svg{width:24px;height:24px;fill:currentColor}
+.grip.hint::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--acc);animation:ping 1.6s ease-out 3}
+.stage{--acc:#2dd4bf}
+@keyframes ping{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.9);opacity:0}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}65%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+
+/* labels on each side */
+.lab{position:absolute;top:10px;z-index:4;padding:3px 12px;border-radius:999px;background:rgba(6,9,11,.82);color:#e9eef0;font:700 .8rem/1.6 var(--mono);letter-spacing:.04em;pointer-events:none;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.lab b{color:#2dd4bf}
+.lab.l{left:10px;opacity:clamp(0,calc((var(--pn) - 14) / 8),1)}
+.lab.r{right:10px;opacity:clamp(0,calc((86 - var(--pn)) / 8),1)}
+
+/* callout rings over the real Stride / padding / preview regions (viewBox = screenshot pixels) */
+#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.ring{fill:none;stroke:#2dd4bf;stroke-width:calc(2.2/var(--k));stroke-linecap:square;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s var(--ease) both;animation-delay:var(--d,0s)}
+.ring.fill{fill:rgba(45,212,191,.08)}
+.num{position:absolute;z-index:4;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#2dd4bf;color:#04201c;font:800 .78rem/1 var(--mono);box-shadow:0 0 0 3px rgba(3,6,8,.7);pointer-events:none;animation:pop .45s var(--ease) both;animation-delay:var(--d,0s);margin:-13px 0 0 -13px;left:calc(var(--x) / 16 * 1%);top:calc(var(--y) / 8.7 * 1%)}
+
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 4px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:999px;padding:2px}
+.seg button{min-height:36px;padding:0 16px;border:0;border-radius:999px;background:transparent;color:var(--muted);font-size:.9rem;font-weight:700;cursor:pointer;transition:background-color .25s,color .25s}
+.seg button[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+.hintt{margin-left:auto;color:var(--muted);font:.85rem var(--mono)}
+
+.legend{display:flex;flex-wrap:wrap;margin-top:14px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.legend li{flex:1 1 220px;padding:14px 20px;border-left:1px solid var(--line)}
+.legend li:first-child{border-left:0}
+.legend .h{display:flex;align-items:center;gap:10px;margin-bottom:6px;color:var(--muted);font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+html[lang=ko] .legend .h{letter-spacing:0}
+.legend .h i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--on-accent);font:800 .72rem/1 var(--mono);font-style:normal}
+.legend .v{font:600 1.15rem var(--mono)}
+.legend .v span{opacity:.45;transition:opacity .3s,color .3s}
+.legend .v span.on{opacity:1;color:var(--accent)}
+.legend .v em{font-style:normal;color:var(--muted);margin:0 .35em}
+.note{margin-top:14px;color:var(--muted);font-size:.9rem}
+
+html.still *,html.still *::before,html.still *::after{animation:none!important;transition:none!important}
+html.still .ring{stroke-dashoffset:0}
+@media (max-width:720px){
+  .hintt{display:none}
+  .legend li{flex:1 1 100%;border-left:0;border-top:1px solid var(--line)}
+  .legend li:first-child{border-top:0}
+  .lab{font-size:.7rem;padding:2px 9px}
+  .num{width:20px;height:20px;font-size:.65rem;margin:-10px 0 0 -10px}
+  .grip{width:44px;height:44px;margin:-22px 0 0 -22px;left:clamp(22px,var(--p),calc(100% - 22px))}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tools">
+    <button class="tb" type="button" id="bl" aria-pressed="false">KO</button>
+    <button class="tb" type="button" id="bt" aria-pressed="false">Light</button>
+  </div>
+  <p class="no">06</p>
+  <h1>Raw Buffer Visualizer</h1>
+  <p class="desc" id="desc"></p>
+
+  <section class="vw" id="vw" aria-labelledby="vwlabel">
+    <h2 id="vwlabel" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></h2>
+    <div class="frame">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="stage" id="stage">
+        <img class="after" id="ia" src="../../assets/rbv-manual-stride-after.webp" width="1600" height="870" alt="">
+        <img class="before" id="ib" src="../../assets/rbv-manual-stride-before.webp" width="1600" height="870" alt="">
+        <span class="lab l" id="labl"></span><span class="lab r" id="labr"></span>
+        <svg id="ov" viewBox="0 0 1600 870" aria-hidden="true" focusable="false">
+          <path class="ring fill" pathLength="1" style="--d:.5s" d="M1424 153h124v20h-124z"/>
+          <path class="ring fill" pathLength="1" style="--d:.7s" d="M1366 209h172v26h-172z"/>
+          <path class="ring" pathLength="1" style="--d:.9s" d="M860 282h495v372h-495z"/>
+        </svg>
+        <span class="num" style="--x:1548;--y:153;--d:.8s">1</span>
+        <span class="num" style="--x:1538;--y:209;--d:1s">2</span>
+        <span class="num" style="--x:860;--y:282;--d:1.2s">3</span>
+        <div class="div" id="div">
+          <button class="grip" id="grip" type="button" role="slider" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 7l-5 5 5 5zM15.5 7l5 5-5 5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctl">
+      <div class="seg" role="group" id="seg">
+        <button type="button" id="bb" aria-pressed="false"></button>
+        <button type="button" id="ba" aria-pressed="false"></button>
+      </div>
+      <span class="hintt" id="hint"></span>
+    </div>
+
+    <ol class="legend" id="lg">
+      <li><p class="h"><i>1</i><span id="h1"></span></p><p class="v"><span id="s1b" class="on">3840</span><em>→</em><span id="s1a">3920</span></p></li>
+      <li><p class="h"><i>2</i><span id="h2"></span></p><p class="v"><span id="s2b" class="on">0 B/row</span><em>→</em><span id="s2a">80 B/row</span></p></li>
+      <li><p class="h"><i>3</i><span id="h3"></span></p><p class="v" id="v3"></p></li>
+    </ol>
+    <p class="note" id="note"></p>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var D = document, W = window, H = D.documentElement, q = new URLSearchParams(location.search);
+  function $(s) { return D.querySelector(s); }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  var still = W.matchMedia('(prefers-reduced-motion: reduce)').matches || q.has('still');
+  if (still) H.classList.add('still');
+  var lang = q.get('lang') === 'ko' ? 'ko' : 'en';
+  H.dataset.theme = q.get('theme') === 'light' ? 'light' : 'dark';
+
+  var T = {
+    en: {
+      desc: 'Image Watch-style debugging for C# machine vision: inspect image variables and raw 2D buffers at a Visual Studio breakpoint in one docked viewer.',
+      label: 'Before and after applying the row stride', slider: 'Divider: left shows before, right shows after',
+      before: 'Before · stride 3840', after: 'After · stride 3920', labl: ['BEFORE', 'stride 3840'], labr: ['AFTER', 'stride 3920'],
+      h1: 'Stride field', h2: 'Padding per row', h3: 'Preview', v3: 'same PCB snapshot',
+      hint: '← → move · Shift ±10 · Home/End', note: 'Same snapshot before and after applying the known 3920-byte row stride. Values are read from the two captures.',
+      vt: function (p) { return 'Before ' + Math.round(p) + ' %, after ' + Math.round(100 - p) + ' %'; }
+    },
+    ko: {
+      desc: 'C# 머신비전용 Image Watch 방식 디버깅: Visual Studio 중단점에서 이미지 변수와 원시 2D 버퍼를 직접 검사합니다.',
+      label: '행 스트라이드 적용 전후 비교', slider: '구분선: 왼쪽은 적용 전, 오른쪽은 적용 후',
+      before: '적용 전 · 스트라이드 3840', after: '적용 후 · 스트라이드 3920', labl: ['적용 전', '스트라이드 3840'], labr: ['적용 후', '스트라이드 3920'],
+      h1: 'Stride 입력란', h2: '행당 패딩', h3: '미리보기', v3: '같은 PCB 스냅샷',
+      hint: '← → 이동 · Shift ±10 · Home/End', note: '알려진 3,920바이트 행 스트라이드를 적용하기 전과 후의 같은 스냅샷입니다. 표시한 값은 두 캡처에서 읽은 값입니다.',
+      vt: function (p) { return '적용 전 ' + Math.round(p) + ' %, 적용 후 ' + Math.round(100 - p) + ' %'; }
+    }
+  };
+
+  var stage = $('#stage'), grip = $('#grip'), ov = $('#ov');
+  var p = clamp(parseFloat(q.get('p')), 0, 100); if (isNaN(p)) p = 50;
+  var anim = 0, touched = false, started = false;
+
+  function set(v) {
+    p = clamp(v, 0, 100);
+    stage.style.setProperty('--p', p.toFixed(2) + '%');
+    stage.style.setProperty('--pn', p.toFixed(2));
+    grip.setAttribute('aria-valuenow', Math.round(p));
+    grip.setAttribute('aria-valuetext', T[lang].vt(p));
+    $('#bb').setAttribute('aria-pressed', p >= 98); $('#ba').setAttribute('aria-pressed', p <= 2);
+    var b = p >= 50;
+    $('#s1b').classList.toggle('on', b); $('#s1a').classList.toggle('on', !b);
+    $('#s2b').classList.toggle('on', b); $('#s2a').classList.toggle('on', !b);
+  }
+  function stop() { cancelAnimationFrame(anim); anim = 0; }
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  /* path = list of [value, ms]; plays segments in order, interruptible by any user input */
+  function play(path) {
+    stop();
+    if (still) { set(path[path.length - 1][0]); return; }
+    var i = 0, from = p, t0 = null;
+    (function f(ts) {
+      t0 = t0 || ts;
+      var seg = path[i], k = clamp((ts - t0) / seg[1], 0, 1);
+      set(from + (seg[0] - from) * ease(k));
+      if (k < 1) anim = requestAnimationFrame(f);
+      else if (++i < path.length) { from = p; t0 = null; anim = requestAnimationFrame(f); }
+      else anim = 0;
+    })(performance.now());
+  }
+
+  /* pointer: drag anywhere on the stage */
+  var dragging = false;
+  function fromEvent(e) { var r = stage.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 100; }
+  stage.addEventListener('pointerdown', function (e) {
+    if (e.button > 0) return;
+    touched = true; stop(); grip.classList.remove('hint');
+    dragging = true; stage.setPointerCapture(e.pointerId); set(fromEvent(e));
+  });
+  stage.addEventListener('pointermove', function (e) { if (dragging) set(fromEvent(e)); });
+  function end() { dragging = false; }
+  /* focus after pointerup: the default mousedown action would otherwise move focus back to <body> */
+  stage.addEventListener('pointerup', function () { end(); grip.focus({ preventScroll: true }); });
+  stage.addEventListener('pointercancel', end);
+
+  /* keyboard on the slider handle */
+  grip.addEventListener('keydown', function (e) {
+    var s = e.shiftKey ? 10 : 2, n = null;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') n = p - s;
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') n = p + s;
+    else if (e.key === 'PageDown') n = p - 10; else if (e.key === 'PageUp') n = p + 10;
+    else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = 100;
+    if (n === null) return;
+    e.preventDefault(); touched = true; stop(); grip.classList.remove('hint'); set(n);
+  });
+  $('#bb').addEventListener('click', function () { touched = true; grip.classList.remove('hint'); play([[100, 600]]); });
+  $('#ba').addEventListener('click', function () { touched = true; grip.classList.remove('hint'); play([[0, 600]]); });
+
+  /* stroke scale for the rings */
+  function scaleK() { ov.style.setProperty('--k', (stage.clientWidth / 1600).toFixed(4)); }
+  if (W.ResizeObserver) new ResizeObserver(scaleK).observe(stage); else W.addEventListener('resize', scaleK);
+
+  function applyLang() {
+    var t = T[lang]; H.lang = lang;
+    $('#desc').textContent = t.desc; $('#vwlabel').textContent = t.label; $('#vw').setAttribute('aria-label', t.label);
+    $('#ia').alt = t.after; $('#ib').alt = t.before; grip.setAttribute('aria-label', t.slider);
+    $('#labl').innerHTML = '<b>' + t.labl[0] + '</b> · ' + t.labl[1]; $('#labr').innerHTML = '<b>' + t.labr[0] + '</b> · ' + t.labr[1];
+    $('#bb').textContent = t.before; $('#ba').textContent = t.after;
+    $('#h1').textContent = t.h1; $('#h2').textContent = t.h2; $('#h3').textContent = t.h3; $('#v3').textContent = t.v3;
+    $('#hint').textContent = t.hint; $('#note').textContent = t.note;
+    $('#bl').textContent = lang === 'ko' ? 'EN' : 'KO'; $('#bl').setAttribute('aria-label', lang === 'ko' ? 'English' : '한국어');
+    $('#bt').textContent = H.dataset.theme === 'light' ? (lang === 'ko' ? '다크' : 'Dark') : (lang === 'ko' ? '라이트' : 'Light');
+    set(p);
+  }
+  $('#bl').addEventListener('click', function () { lang = lang === 'ko' ? 'en' : 'ko'; applyLang(); });
+  $('#bt').addEventListener('click', function () { H.dataset.theme = H.dataset.theme === 'light' ? 'dark' : 'light'; applyLang(); });
+
+  scaleK(); applyLang();
+  W.__cmp = { set: set, play: play, value: function () { return p; }, idle: function () { return !anim; } };
+
+  /* first time 55% visible: one short wiggle + pulse on the grip, never repeated, cancelled by any input */
+  if (!still && !q.has('p') && W.IntersectionObserver) {
+    new IntersectionObserver(function (en, o) {
+      if (en[0].isIntersecting && !started && !touched) {
+        started = true; o.disconnect(); grip.classList.add('hint');
+        play([[26, 700], [74, 900], [50, 700]]);
+      }
+    }, { threshold: 0.55 }).observe(stage);
+  }
+})();
+</script>
+</body>
+</html>

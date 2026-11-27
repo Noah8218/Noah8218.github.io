@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Noah Choi - hero concept B (Blueprint Cream), static mock</title>
+<style>
+/* Static concept mock. No external requests. Display face = Bahnschrift (Windows system font) as a stand-in for a DIN-like web font (Barlow 600/700, OFL). */
+:root{
+  --paper:#F4EFE6;--paper-2:#E9E2D3;--line:#D5CCB8;
+  --ink:#14223F;--ink-2:#43506B;--ink-3:#5E6A84;
+  --ok:#0B9D58;--ok-ink:#07763F;--ng:#E24D2A;--roi:#F2B233;
+  --pk-ok-b:#07763F;--pk-ok-f:#fff;--pk-ng-b:#B83415;--pk-ng-f:#fff;--pk-roi-b:#F2B233;--pk-roi-f:#14223F;--pk-ink-b:#14223F;--pk-ink-f:#F4EFE6;
+  --mon:#0E1A33;--mon-2:#16284D;--mon-3:#1F3A6B;--mon-ln:#14223F;
+  --okd:#2CCB83;--ngd:#FF6A45;--roid:#FFC857;
+  --ghost:rgba(233,226,211,.7);--grid:rgba(20,34,63,.13);--glow:#0B9D58;
+  --f-disp:"Barlow","Bahnschrift","Segoe UI Variable Display","Segoe UI",-apple-system,"Helvetica Neue","Noto Sans KR","Malgun Gothic",sans-serif;
+  --f-body:"Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --f-mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
+}
+html.night{
+  --paper:#0C1630;--paper-2:#142347;--line:#2A3A63;
+  --ink:#F4EFE6;--ink-2:#B8C0D4;--ink-3:#8A93AB;
+  --ok:#2CCB83;--ok-ink:#2CCB83;--ng:#FF6A45;--roi:#FFC857;
+  --pk-ok-b:#2CCB83;--pk-ok-f:#0C1630;--pk-ng-b:#FF6A45;--pk-ng-f:#0C1630;--pk-roi-b:#FFC857;--pk-roi-f:#0C1630;--pk-ink-b:#F4EFE6;--pk-ink-f:#0C1630;
+  --mon:#070E1F;--mon-2:#101E3D;--mon-3:#1A3262;--mon-ln:#3A4C7A;
+  --ghost:rgba(20,35,71,.75);--grid:rgba(244,239,230,.09);--glow:#2CCB83;
+}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--paper);color:var(--ink);font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+body{width:1440px}
+.hero{position:relative;width:1440px;height:900px;overflow:hidden;background:
+  radial-gradient(circle,var(--grid) 1.1px,transparent 1.5px) 0 0/28px 28px,var(--paper)}
+.hero>.reg{position:absolute;width:18px;height:18px;border:0 solid var(--ink-3);opacity:.55}
+.reg.a{left:28px;top:96px;border-width:2px 0 0 2px}.reg.b{right:28px;top:96px;border-width:2px 2px 0 0}
+.reg.c{left:28px;bottom:84px;border-width:0 0 2px 2px}.reg.d{right:28px;bottom:84px;border-width:0 2px 2px 0}
+
+/* nav */
+.nav{position:absolute;left:80px;right:80px;top:26px;height:50px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;font:700 25px/1 var(--f-disp);letter-spacing:.005em}
+.brand svg{width:34px;height:34px}
+.tools{display:flex;align-items:center;gap:12px}
+.seg{display:flex;border:2px solid var(--ink);border-radius:99px;padding:2px;font:700 14px/1 var(--f-disp);letter-spacing:.06em}
+.seg b,.seg i{font-style:normal;padding:8px 12px;border-radius:99px}
+.seg b{background:var(--ink);color:var(--paper)}.seg i{color:var(--ink-2)}
+.theme{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);background:linear-gradient(90deg,var(--ink) 50%,transparent 50%)}
+
+/* copy */
+.copy{position:absolute;left:80px;top:238px;width:470px}
+.name{position:relative;display:inline-block;padding:10px 24px 8px 20px;margin-left:-20px;font:700 152px/.86 var(--f-disp);letter-spacing:-.02em;color:var(--ink)}
+.name span{display:block}
+.name::before{content:"";position:absolute;inset:0;pointer-events:none;--c:var(--ok);--t:5px;--l:54px;
+  background:
+   linear-gradient(var(--c),var(--c)) 0 0/var(--l) var(--t) no-repeat,linear-gradient(var(--c),var(--c)) 0 0/var(--t) var(--l) no-repeat,
+   linear-gradient(var(--c),var(--c)) 100% 0/var(--l) var(--t) no-repeat,linear-gradient(var(--c),var(--c)) 100% 0/var(--t) var(--l) no-repeat,
+   linear-gradient(var(--c),var(--c)) 0 100%/var(--l) var(--t) no-repeat,linear-gradient(var(--c),var(--c)) 0 100%/var(--t) var(--l) no-repeat,
+   linear-gradient(var(--c),var(--c)) 100% 100%/var(--l) var(--t) no-repeat,linear-gradient(var(--c),var(--c)) 100% 100%/var(--t) var(--l) no-repeat}
+.name .ck{position:absolute;right:-20px;top:-20px;width:42px;height:42px;border-radius:50%;background:var(--pk-ok-b);display:grid;place-items:center;box-shadow:0 0 0 5px var(--paper)}
+.name .ck svg{width:22px;height:22px}
+.role{margin-top:34px;max-width:440px;font:600 31px/1.18 var(--f-disp);letter-spacing:.005em;color:var(--ink-2)}
+.role::before{content:"";display:block;width:64px;height:0;border-top:4px dashed var(--roi);margin-bottom:18px}
+
+svg{display:block}
+#scene{position:absolute;left:0;top:0}
+.gh{fill:var(--ghost);stroke:var(--ink);stroke-width:2.5;stroke-dasharray:7 6;stroke-linecap:round;stroke-linejoin:round}
+.ghl{fill:none;stroke:var(--ink-3);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round}
+.fl{fill:none;stroke:var(--ink-2);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.pk rect{fill:var(--b)}.pk .pt{fill:var(--f);font:700 19px var(--f-disp);letter-spacing:.01em;dominant-baseline:central}
+.pk .nb{fill:var(--f)}.pk .nt{fill:var(--b);font:700 14px var(--f-disp);text-anchor:middle;dominant-baseline:central}
+.pk-ok{--b:var(--pk-ok-b);--f:var(--pk-ok-f)}.pk-ng{--b:var(--pk-ng-b);--f:var(--pk-ng-f)}.pk-roi{--b:var(--pk-roi-b);--f:var(--pk-roi-f)}.pk-ink{--b:var(--pk-ink-b);--f:var(--pk-ink-f)}
+.ld{fill:none;stroke-width:2.5;stroke-linecap:round}
+
+/* bottom index */
+.idx{position:absolute;left:80px;top:836px;width:1280px;height:52px}
+.idx text{font:600 13px var(--f-mono);fill:var(--ink-3);letter-spacing:.08em}
+
+/* spec sheet */
+.spec{position:relative;width:1440px;height:900px;padding:48px 80px 0;border-top:3px dashed var(--ink-3);background:var(--paper)}
+.spec h2{font:700 14px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+.cols{display:grid;grid-template-columns:600px 1fr;gap:48px}
+.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.tiles.t3{grid-template-columns:repeat(3,1fr)}
+.tile{border:1.5px solid var(--ink);border-radius:12px;overflow:hidden;background:var(--paper)}
+.tile i{display:block;height:58px}
+.tile div{padding:7px 8px 8px;font:12px/1.35 var(--f-mono);color:var(--ink-2)}
+.tile b{display:block;font:700 12.5px var(--f-mono);color:var(--ink)}
+.night-panel{background:#0C1630;border-radius:16px;padding:14px;margin-bottom:12px}
+.night-panel .tile{border-color:#2A3A63;background:#0C1630}.night-panel .tile div{color:#B8C0D4}.night-panel .tile b{color:#F4EFE6}
+.rule{font:12.5px/1.5 var(--f-mono);color:var(--ink-2);margin:6px 0 16px}
+.rule em{font-style:normal;color:var(--ink);font-weight:700}
+.ty{border-top:1.5px solid var(--line);padding:11px 0 10px;display:grid;grid-template-columns:122px 1fr;gap:14px;align-items:baseline}
+.ty small{font:12px/1.4 var(--f-mono);color:var(--ink-3)}
+.ty .s{font-family:var(--f-disp);font-weight:700;color:var(--ink);white-space:nowrap}
+.comp{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.chipk{font:700 17px/1 var(--f-disp);padding:11px 18px 11px 12px;border-radius:99px;display:inline-flex;align-items:center;gap:9px;background:var(--b);color:var(--f)}
+.chipk u{width:22px;height:22px;border-radius:50%;background:var(--f);color:var(--b);text-decoration:none;font:700 13px/22px var(--f-disp);text-align:center}
+.chipk.pk-ok{--b:var(--pk-ok-b);--f:var(--pk-ok-f)}.chipk.pk-ng{--b:var(--pk-ng-b);--f:var(--pk-ng-f)}.chipk.pk-roi{--b:var(--pk-roi-b);--f:var(--pk-roi-f)}.chipk.pk-ink{--b:var(--pk-ink-b);--f:var(--pk-ink-f)}
+.note{font:12.5px/1.5 var(--f-mono);color:var(--ink-3);margin-top:12px}
+</style>
+</head>
+<body>
+
+<section class="hero" id="hero">
+  <span class="reg a"></span><span class="reg b"></span><span class="reg c"></span><span class="reg d"></span>
+
+  <header class="nav">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 26v-12h12M38 14h12v12M50 38v12H38M26 50H14V38" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="32" r="6.5" fill="var(--ok)"/></svg>
+      <span>Noah Choi</span>
+    </div>
+    <div class="tools"><div class="seg"><b>EN</b><i>KO</i></div><span class="theme"></span></div>
+  </header>
+
+  <div class="copy">
+    <h1 class="name"><span>Noah</span><span>Choi</span>
+      <i class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>
+    </h1>
+    <p class="role">Industrial Machine Vision Software Engineer</p>
+  </div>
+
+  <svg id="scene" width="1440" height="900" viewBox="0 0 1440 900" aria-hidden="true">
+    <defs>
+      <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" style="stop-color:var(--glow);stop-opacity:.17"/><stop offset="1" style="stop-color:var(--glow);stop-opacity:0"/></radialGradient>
+      <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4EFE6" stop-opacity="0"/><stop offset="1" stop-color="#F4EFE6" stop-opacity=".2"/></linearGradient>
+      <clipPath id="scr"><rect x="816" y="526" width="288" height="220" rx="10"/></clipPath>
+      <clipPath id="lens"><circle cx="1086" cy="640" r="46"/></clipPath>
+    </defs>
+
+    <g transform="translate(-65 0)">
+      <ellipse cx="960" cy="446" rx="330" ry="372" fill="url(#glow)"/>
+
+      <!-- 04 ghost machine: not delivered yet (dashed blueprint) -->
+      <g class="gh">
+        <rect x="790" y="124" width="340" height="30" rx="12"/>
+        <rect x="800" y="154" width="26" height="266" rx="8"/>
+        <rect x="1094" y="154" width="26" height="266" rx="8"/>
+        <rect x="784" y="414" width="58" height="12" rx="5"/>
+        <rect x="1078" y="414" width="58" height="12" rx="5"/>
+        <rect x="948" y="154" width="24" height="20"/>
+        <rect x="916" y="174" width="88" height="52" rx="12"/>
+        <circle cx="960" cy="200" r="11"/>
+        <path d="M938 226h44l-8 24h-28z"/>
+        <ellipse cx="960" cy="254" rx="30" ry="6"/>
+        <rect x="816" y="384" width="288" height="26" rx="13"/>
+        <circle cx="829" cy="397" r="8"/><circle cx="1091" cy="397" r="8"/>
+        <rect x="868" y="372" width="184" height="12" rx="3"/>
+        <rect x="884" y="362" width="22" height="10" rx="2"/><rect x="930" y="360" width="32" height="12" rx="2"/><rect x="984" y="364" width="20" height="8" rx="2"/><rect x="1018" y="362" width="24" height="10" rx="2"/>
+      </g>
+      <path class="ghl" d="M944 254L868 360M976 254L1052 360"/>
+
+      <!-- 05 SDK chip + data path -->
+      <path class="fl" d="M960 430v8"/>
+      <path class="fl" d="M960 488v10m-6-6l6 6l6-6"/>
+      <rect x="938" y="442" width="44" height="44" rx="12" fill="var(--ink)"/>
+      <text x="960" y="471" text-anchor="middle" style="font:700 22px var(--f-mono);fill:var(--paper)">{ }</text>
+
+      <!-- monitor (solid = software) -->
+      <rect x="808" y="508" width="320" height="262" rx="22" fill="var(--ink)" opacity=".13"/>
+      <rect x="800" y="500" width="320" height="262" rx="22" fill="var(--mon)" stroke="var(--mon-ln)" stroke-width="3"/>
+      <circle cx="822" cy="513" r="3.2" fill="#F4EFE6" opacity=".5"/><circle cx="834" cy="513" r="3.2" fill="#F4EFE6" opacity=".5"/><circle cx="846" cy="513" r="3.2" fill="#F4EFE6" opacity=".5"/>
+      <rect x="816" y="526" width="288" height="220" rx="10" fill="var(--mon-2)"/>
+      <g clip-path="url(#scr)">
+        <rect x="832" y="538" width="256" height="148" rx="8" fill="var(--mon-3)"/>
+        <path d="M896 571h14M946 571h14M982 571h36M868 590v18M926 590v18M1052 590v18M890 627h14M968 627h62M1074 627h14" fill="none" stroke="#3E62A8" stroke-width="2" stroke-linecap="round"/>
+        <g fill="var(--mon)" stroke="#6C8DC8" stroke-width="1.5">
+          <rect x="846" y="552" width="50" height="38" rx="3"/><rect x="910" y="552" width="36" height="38" rx="3"/><rect x="960" y="552" width="22" height="38" rx="3"/><rect x="1018" y="552" width="56" height="38" rx="3"/>
+          <rect x="846" y="608" width="44" height="38" rx="3"/><rect x="904" y="608" width="64" height="38" rx="3"/><rect x="1030" y="608" width="44" height="38" rx="3"/>
+        </g>
+        <circle cx="856" cy="562" r="3" fill="#6C8DC8"/>
+        <g fill="var(--roid)"><circle cx="860" cy="672" r="3"/><circle cx="882" cy="672" r="3"/><circle cx="904" cy="672" r="3"/><circle cx="926" cy="672" r="3"/><circle cx="948" cy="672" r="3"/><circle cx="970" cy="672" r="3"/><circle cx="992" cy="672" r="3"/><circle cx="1014" cy="672" r="3"/><circle cx="1036" cy="672" r="3"/><circle cx="1058" cy="672" r="3"/></g>
+        <circle cx="846" cy="678" r="4" fill="var(--mon-2)"/><circle cx="1074" cy="678" r="4" fill="var(--mon-2)"/>
+        <!-- scan beam -->
+        <rect x="816" y="560" width="288" height="32" fill="url(#beam)"/><rect x="816" y="592" width="288" height="2" fill="#F4EFE6" opacity=".75"/>
+        <!-- 03 laser line + profile strip -->
+        <rect x="990" y="538" width="12" height="148" fill="var(--roid)" opacity=".16"/>
+        <line x1="996" y1="542" x2="996" y2="686" stroke="var(--roid)" stroke-width="2.5"/>
+        <path d="M989 534h14l-7 9z" fill="var(--roid)"/>
+        <rect x="832" y="696" width="256" height="42" rx="6" fill="var(--mon)"/>
+        <line x1="838" y1="726" x2="1082" y2="726" stroke="var(--roid)" stroke-width="1.6" stroke-dasharray="4 4"/>
+        <polyline points="842,726 872,726 872,708 900,708 900,726 934,726 934,714 948,714 948,726 988,726 988,704 1004,704 1004,726 1056,726 1056,716 1078,716" fill="none" stroke="#F4EFE6" stroke-width="2.4" stroke-linejoin="round"/>
+        <!-- 04b NG tag -->
+        <rect x="840" y="655" width="28" height="13" rx="3" fill="var(--ngd)"/><path d="M850 658l8 7M858 658l-8 7" stroke="var(--mon)" stroke-width="2" stroke-linecap="round"/>
+        <g id="brk"></g>
+      </g>
+
+      <!-- 06 magnifier -->
+      <line x1="1123" y1="677" x2="1154" y2="710" stroke="var(--ink)" stroke-width="15" stroke-linecap="round"/>
+      <line x1="1123" y1="677" x2="1154" y2="710" stroke="var(--roid)" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="1086" cy="640" r="53" fill="var(--mon)" stroke="var(--ink)" stroke-width="3"/>
+      <g clip-path="url(#lens)" id="px"></g>
+      <circle cx="1086" cy="640" r="50" fill="none" stroke="var(--roid)" stroke-width="6"/>
+
+      <g id="callouts"></g>
+    </g>
+  </svg>
+
+  <svg class="idx" viewBox="0 0 1280 52" aria-hidden="true">
+    <line x1="10" y1="14" x2="1262" y2="14" stroke="var(--ink-3)" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="round"/>
+    <circle cx="10" cy="14" r="8" fill="var(--ok)"/>
+    <rect x="1256" y="7" width="14" height="14" rx="4" fill="var(--ink)"/>
+    <g id="ticks"></g>
+  </svg>
+</section>
+
+<section class="spec">
+  <div class="cols">
+    <div>
+      <h2>Palette / light (paper)</h2>
+      <div class="tiles">
+        <div class="tile"><i style="background:#F4EFE6"></i><div><b>paper</b>#F4EFE6<br>page</div></div>
+        <div class="tile"><i style="background:#E9E2D3"></i><div><b>paper-2</b>#E9E2D3<br>panel, ghost</div></div>
+        <div class="tile"><i style="background:#D5CCB8"></i><div><b>line</b>#D5CCB8<br>hairline only</div></div>
+        <div class="tile"><i style="background:#14223F"></i><div><b>ink</b>#14223F<br>13.8:1</div></div>
+        <div class="tile"><i style="background:#43506B"></i><div><b>ink-2</b>#43506B<br>7.1:1</div></div>
+        <div class="tile"><i style="background:#5E6A84"></i><div><b>ink-3</b>#5E6A84<br>4.7:1</div></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><i style="background:#0B9D58"></i><div><b>ok</b>#0B9D58<br>graphic 3.1:1</div></div>
+        <div class="tile"><i style="background:#07763F"></i><div><b>ok-ink</b>#07763F<br>text 5.0:1</div></div>
+        <div class="tile"><i style="background:#E24D2A"></i><div><b>ng</b>#E24D2A<br>graphic 3.4:1</div></div>
+        <div class="tile"><i style="background:#B83415"></i><div><b>ng-ink</b>#B83415<br>text 5.2:1</div></div>
+        <div class="tile"><i style="background:#F2B233"></i><div><b>roi</b>#F2B233<br>fill, ink text</div></div>
+        <div class="tile"><i style="background:#8A5A00"></i><div><b>roi-ink</b>#8A5A00<br>text 5.2:1</div></div>
+      </div>
+      <h2 style="margin-top:6px">Palette / night + monitor</h2>
+      <div class="night-panel">
+        <div class="tiles" style="margin:0">
+          <div class="tile"><i style="background:#0C1630"></i><div><b>bg</b>#0C1630</div></div>
+          <div class="tile"><i style="background:#142347"></i><div><b>surface</b>#142347</div></div>
+          <div class="tile"><i style="background:#F4EFE6"></i><div><b>text</b>#F4EFE6<br>15.6:1</div></div>
+          <div class="tile"><i style="background:#2CCB83"></i><div><b>ok</b>#2CCB83<br>8.5:1</div></div>
+          <div class="tile"><i style="background:#FF6A45"></i><div><b>ng</b>#FF6A45<br>6.3:1</div></div>
+          <div class="tile"><i style="background:#FFC857"></i><div><b>roi</b>#FFC857<br>11.6:1</div></div>
+        </div>
+      </div>
+      <div class="tiles t3">
+        <div class="tile"><i style="background:#0E1A33"></i><div><b>monitor</b>#0E1A33 screenshot frame, both themes</div></div>
+        <div class="tile"><i style="background:#16284D"></i><div><b>monitor-2</b>#16284D app window</div></div>
+        <div class="tile"><i style="background:#1F3A6B"></i><div><b>monitor-3</b>#1F3A6B board, image</div></div>
+      </div>
+      <p class="rule"><em>Meaning:</em> green = OK / usable, orange = NG / attention, amber = ROI / measurement. Navy = structure. Amber never carries text on paper (1.6:1).</p>
+    </div>
+
+    <div>
+      <h2>Type / display = DIN-like (stand-in: Bahnschrift)</h2>
+      <div class="ty"><small>Display<br>clamp 5-12rem<br>700 / -0.02em / .86</small><div class="s" style="font-size:92px;line-height:.92;letter-spacing:-.02em">Noah Choi</div></div>
+      <div class="ty"><small>H2 42px<br>700 / -0.01em</small><div class="s" style="font-size:42px;line-height:1;letter-spacing:-.01em">Raw Buffer Visualizer</div></div>
+      <div class="ty"><small>H3 30px<br>700</small><div class="s" style="font-size:30px;line-height:1.1">Machine Studio &nbsp;3D Studio</div></div>
+      <div class="ty"><small>Lead 23px<br>600</small><div class="s" style="font-size:23px;font-weight:600;color:var(--ink-2);line-height:1.2">Industrial Machine Vision Software Engineer</div></div>
+      <div class="ty"><small>Body 17px / 1.65<br>system sans</small><div style="font:17px/1.55 var(--f-body);color:var(--ink)">2D Workbench, Labeling Studio, 3D Studio,<br>Machine Studio, Vision SDK, Raw Buffer Visualizer</div></div>
+      <div class="ty"><small>Index / label<br>mono 14 / .08em</small><div style="font:600 14px var(--f-mono);letter-spacing:.08em;color:var(--ink-2)">01 &nbsp;02 &nbsp;03 &nbsp;04 &nbsp;05 &nbsp;06</div></div>
+      <div class="ty"><small>KO + EN line<br>tracking 0 for Hangul</small><div class="s" style="font-size:38px;line-height:1.1;letter-spacing:0">Noah Choi <span style="font-weight:700;font-family:var(--f-body)">&#52572;&#45432;&#50500;</span></div></div>
+      <div class="comp">
+        <span class="chipk pk-ok"><u>1</u>2D Workbench</span><span class="chipk pk-ng"><u>2</u>Labeling Studio</span><span class="chipk pk-roi"><u>3</u>3D Studio</span><span class="chipk pk-ink"><u>4</u>Machine Studio</span>
+      </div>
+      <p class="note">Pill = number badge + name. Colour of the pill = colour of the thing it points at in the scene. Mock renders the display face with Bahnschrift (Windows system font); the production web font would be Barlow 600/700 (OFL), body stays on the system stack.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  if(location.hash==='#night')document.documentElement.classList.add('night');
+  var NS='http://www.w3.org/2000/svg';
+  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+  /* detection bracket */
+  function br(p,x,y,w,h,col,sw,l){
+    var r=x+w,d=y+h;
+    el('path',{d:'M'+x+' '+(y+l)+'V'+y+'H'+(x+l)+'M'+(r-l)+' '+y+'H'+r+'V'+(y+l)+'M'+r+' '+(d-l)+'V'+d+'H'+(r-l)+'M'+(x+l)+' '+d+'H'+x+'V'+(d-l),fill:'none',stroke:col,'stroke-width':sw,'stroke-linecap':'round','stroke-linejoin':'round'},p);
+  }
+  var b=document.getElementById('brk');
+  br(b,842,548,58,46,'var(--okd)',3,10);br(b,906,548,44,46,'var(--okd)',3,10);br(b,1014,548,64,46,'var(--okd)',3,10);
+  br(b,841,603,54,48,'var(--ngd)',3.4,11);
+  el('rect',{x:898,y:602,width:78,height:50,rx:3,fill:'none',stroke:'var(--roid)','stroke-width':2.2,'stroke-dasharray':'6 5'},b);
+  /* raw pixel grid inside the magnifier */
+  var px=document.getElementById('px'),tones=['#16284D','#233E73','#34569B','#5D7FC0','#9FB4DB','#F4EFE6'],s=13,x0=1086-52,y0=640-52,i,j,v,h;
+  for(j=0;j<8;j++)for(i=0;i<8;i++){
+    h=((i*7+j*13+i*j*5)%5)/5-.4;v=Math.max(0,Math.min(5,Math.round((i-3.2)*1.05+h*1.6+(j>4?-.6:0))));
+    el('rect',{x:x0+i*s,y:y0+j*s,width:s-1.2,height:s-1.2,fill:tones[v]},px);
+  }
+  el('rect',{x:x0+4*s-1,y:y0+3*s-1,width:s+.8,height:s+.8,fill:'none',stroke:'var(--roid)','stroke-width':2.2},px);
+  /* callouts: pills + leaders (positions in scene coordinates) */
+  var C=document.getElementById('callouts');
+  var P=[
+    {n:1,t:'2D Workbench',c:'ok',  s:'L',y:536,tx:840,ty:571,col:'var(--ok)'},
+    {n:2,t:'Labeling Studio',c:'ng',s:'L',y:620,tx:840,ty:627,col:'var(--ng)'},
+    {n:3,t:'3D Studio',c:'roi',s:'L',y:708,tx:832,ty:717,col:'var(--roi)',halo:1},
+    {n:4,t:'Machine Studio',c:'ink',s:'R',y:290,tx:1120,ty:290,col:'var(--ink)'},
+    {n:5,t:'Vision SDK',c:'ink',s:'R',y:464,tx:982,ty:464,col:'var(--ink)'},
+    {n:6,t:'Raw Buffer Visualizer',c:'ink',s:'R',y:640,tx:1139,ty:640,col:'var(--ink)'}
+  ];
+  P.forEach(function(p){
+    var ex=p.s==='L'?750:1170;
+    if(p.halo)el('line',{x1:ex,y1:p.y,x2:p.tx,y2:p.ty,'class':'ld',stroke:'var(--ink)','stroke-width':6},C);
+    el('line',{x1:ex,y1:p.y,x2:p.tx,y2:p.ty,'class':'ld',stroke:p.col},C);
+    el('circle',{cx:p.tx,cy:p.ty,r:5.5,fill:p.col,stroke:'var(--paper)','stroke-width':2},C);
+    var g=el('g',{'class':'pk pk-'+p.c},C),t=el('text',{x:44,y:0,'class':'pt'},g);t.textContent=p.t;
+    var w=44+t.getBBox().width+20;
+    var r=el('rect',{x:0,y:-20,width:w,height:40,rx:20},g);g.insertBefore(r,t);
+    var cb=el('circle',{cx:22,cy:0,r:13,'class':'nb'},g);g.insertBefore(cb,t);
+    var nt=el('text',{x:22,y:1,'class':'nt'},g);nt.textContent=p.n;
+    g.setAttribute('transform','translate('+(p.s==='L'?ex-w:ex)+' '+p.y+')');
+  });
+  /* bottom project index */
+  var T=document.getElementById('ticks');
+  for(i=0;i<6;i++){var x=10+i*(1252/5);
+    if(i>0&&i<5)el('rect',{x:x-4,y:10,width:8,height:8,rx:2,fill:'var(--paper)',stroke:'var(--ink-3)','stroke-width':2},T);
+    var tx=el('text',{x:i===0?0:(i===5?1262-10:x-12),y:44},T);tx.textContent='0'+(i+1);if(i===0)tx.setAttribute('style','fill:var(--ok-ink);font-weight:700');
+  }
+})();
+</script>
+</body>
+</html>

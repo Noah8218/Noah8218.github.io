@@ -1,0 +1,232 @@
+# OpenVisionLab Labeling Studio
+
+A Windows desktop tool for labeling industrial images, training and comparing models, and running inference on one PC.
+
+[![Version 0.4.4](https://img.shields.io/badge/version-0.4.4-blue)](Directory.Build.props)
+![Windows 10/11 x64](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-blue)
+![.NET 8](https://img.shields.io/badge/.NET-8-512BD4)
+[![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![CI](https://github.com/Noah8218/OpenVisionLab-Labeling-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/Noah8218/OpenVisionLab-Labeling-Studio/actions/workflows/ci.yml)
+
+English | [한국어](README.ko.md)
+
+![Smart Mask: starting box, AI candidate, confirmation, then save and next](docs/tutorial/images/readme/en/hero-smart-mask.gif)
+
+Draw a starting box, review the MobileSAM candidate, apply the mask, then save and advance. [Watch the MP4](docs/tutorial/images/readme/en/hero-smart-mask.mp4). (Idle time omitted.) [Build and try it](#try-it-in-3-steps)
+
+## Supported tasks
+
+| Object detection | Segmentation | Anomaly detection |
+| --- | --- | --- |
+| [![Washer boxes](docs/tutorial/images/readme/en/detection-washer.png)](#object-detection) | [![Bubble masks](docs/tutorial/images/readme/en/segmentation-bubble.png)](#segmentation-and-smart-mask) | [![Hexagon OK/NG decisions](docs/tutorial/images/readme/en/anomaly-grid-disk.png)](#anomaly-detection) |
+| **Ground truth:** axis-aligned boxes | **Ground truth:** polygons and pixel masks | **Ground truth:** reviewed image-level OK/NG decisions |
+| **Models:** YOLOv5, YOLOv8, YOLO11 | **Models:** YOLOv8-seg, YOLO11-seg, U-Net | **Models:** YOLOv8/YOLO11 classification, PatchCore (pilot) |
+
+## Workflow
+
+Work moves through **Dataset, Labeling, Training, Model comparison, and Inference**.
+
+Set the image folders, classes, and splits in a recipe. Save ground truth in Labeling, train with the selected runtime, compare results under the same evaluation conditions, and explicitly set the inspection model before running inference.
+
+## AI proposes candidates
+
+AI results are candidates for review.<br>
+The operator confirms the result and saves the labels as separate actions.<br>
+Setting the inspection model is a separate step; finishing training does not replace it.
+
+## Task details
+
+### Object detection
+
+![Washer inspection with four washers and one defective washer](docs/tutorial/images/readme/en/detection-washer.png)
+
+The actual app shows five saved boxes: four washers and one defective washer.
+
+Draw a box around the actual object or defect, check its class and bounds, then select **Save labels**.
+Choose two-point drag or four extreme points; clicking top, bottom, left, then right creates an ordinary axis-aligned box.
+For an image without a target, explicitly mark **No object**.
+Select a class with **1–9**; **Ctrl+Enter** saves and advances to the next image.
+
+### Segmentation and Smart Mask
+
+![Nine saved bubble masks in the actual app](docs/tutorial/images/readme/en/segmentation-bubble.png)
+
+Nine bubble regions are saved as masks in this film inspection example.
+
+Use polygons, the brush, or the eraser to describe the boundary.
+In a segmentation recipe, enable **Automatic contour** in **Labeling options** once. Drawing a starting box then generates a MobileSAM candidate.
+To correct a mask, add inclusion or exclusion points one at a time, select **Regenerate candidate**, and compare **Previous candidate** with **Current candidate**.
+Select **Confirm** for the displayed candidate or **Skip** to discard it. Confirmation updates the working annotation; **Save labels** writes it to ground-truth files. Candidate generation and switching do not save files. **Ctrl+Enter** saves and advances.
+
+### Anomaly detection
+
+![Hexagon grid with four normal, four anomaly and four undecided images](docs/tutorial/images/readme/en/anomaly-grid-disk.png)
+
+This generated hexagon example shows manual image decisions: four normal, four anomaly, and four still undecided.
+
+Select **Normal (OK)** or **Anomalous (NG)** to save the image decision and advance to the next unreviewed image.
+Boxes and masks are optional. **G** switches the image queue to grid view.
+YOLOv8/YOLO11 classification learns from both OK and NG examples; PatchCore learns from reviewed-normal images.
+PatchCore returns an image decision, score/threshold, location candidates, and a heatmap. **View heatmap** opens read-only review without changing labels, candidates, or the model.
+
+## Try it in 3 steps
+
+1. Clone `https://github.com/Noah8218/OpenVisionLab-Labeling-Studio.git` and enter the repository directory.
+2. Build and launch the app with the two commands in [Build from source](#build-from-source).
+3. Create an object-detection recipe with `datasets/object-detection/coco128/coco128/images/train2017` as the source image folder. Choose a separate empty output folder, set the classes, then open Labeling. See the [included sample notices](datasets/object-detection/coco128/coco128/README.txt).
+
+Python and weights are model-specific requirements for training, inference, and MobileSAM assistance; manual labeling does not require them.
+
+## Quick start
+
+1. Create a recipe and select object detection, segmentation, or anomaly detection.
+2. Select the source image folder and a separate recipe output folder. Check the class names and order.
+3. Open Labeling, annotate or review images, and save the labels or OK/NG decisions.
+4. Open Training, select the model runtime, run Dataset Health, and check the training settings before starting.
+5. Compare trained results under the same evaluation conditions. Explicitly set the inspection model and save the settings.
+6. Open Inference, check the model and images, then run inference. Review AI candidates; confirming a candidate and saving labels are separate actions.
+
+See the [step-by-step manual](docs/tutorial/README.md), [visual guide](docs/tutorial/labeling-workbench-tutorial.html), or [single-file guide](docs/tutorial/labeling-workbench-tutorial-standalone.html) for the full workflow.
+
+## Installation and requirements
+
+- Windows 10/11 x64; .NET 8 and WPF; one local operator.
+- For source builds: .NET SDK **8.0.421**, pinned by [global.json](global.json), and PowerShell for the scripts below.
+- A graphics driver supporting the SharpGL viewer's required framebuffer functions.
+- Model-specific local Python environments and weights for training, inference, and MobileSAM assistance.
+
+Build from source using the commands below. Keep the repository's `dll`, local `OpenVisionLab` libraries, and `third_party` assets with their aligned OpenCvSharp managed/native runtime. See [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt). Store personal runtime paths in the uncommitted `config/labeling-runtime.local.json`.
+
+## One recipe, multiple models
+
+A recipe shares source images, canonical class order, ground truth, train/valid/test membership, and data/configuration/model provenance across adapters.
+Recipe save or training start records a content-based `dsv2-...` dataset version and SHA-256 identities; identical content reuses the version, while changed labels or splits create a new version.
+The Dataset view shows the recorded version, and trained-model history records the version used.
+On the **Runtime** tab of **Training**, selecting a registered model switches its Python executable, runtime folder, and communication script together; select the runtime folder if initial discovery fails.
+Compare models with matching dataset identities, classes, splits, and evaluation settings; different conditions are shown as differences rather than a ranking.
+
+![Two models trained on one dataset version, compared on the test split, set as the inspection model, then used for inference](docs/tutorial/images/readme/en/multimodel-comparison.gif)
+
+Train YOLOv8n and YOLO11n on the same dataset version, compare them on the test split, set the better model as the inspection model, then run inference. [Watch the MP4](docs/tutorial/images/readme/en/multimodel-comparison.mp4). (Training time omitted.)
+
+## Results on real PCB images
+
+The workflow above was also run end to end on 1,105 real PCB photos (1358×1104) from VisA PCB4. Boxes made from the dataset's defect masks were imported as YOLO labels on the dataset's own split (test: 40 defective, 402 normal images). YOLOv8n and YOLO11n were trained in the app, compared on the test split, and converted to TensorRT engines with the edge runtime.
+
+| Model | mAP50 (app comparison) | Missed defective images | Normal images rejected | TensorRT FP16 GPU time |
+| --- | ---: | ---: | ---: | ---: |
+| YOLOv8n | 0.747 | 3 / 40 | 4 / 402 | 0.76 ms |
+| YOLO11n | 0.723 | 8 / 40 | 1 / 402 | 0.82 ms |
+
+![YOLOv8n on a VisA PCB4 test image: three defects found, one small defect missed](docs/tutorial/images/readme/visa-pcb4-test-result.png)
+
+Green boxes are found defects, the orange box is a missed defect, and thin white boxes are ground truth. Confidence 0.25, input 960 px, RTX 4070 SUPER. These results come from one dataset with 40 defective test images and are not evidence of production accuracy. Image source: VisA (Zou et al., ECCV 2022), [CC BY 4.0](https://github.com/amazon-science/spot-diff).
+
+## Build from source
+
+Windows 10/11 x64, .NET SDK **8.0.421**, and PowerShell are required.
+
+```powershell
+dotnet build .\OpenVisionLab.LabelingStudio.sln -c Debug -p:Platform=x64
+.\scripts\start-labeling-workbench.ps1 -AppMode Debug
+```
+
+See [Build and runtime guide](docs/tutorial/BUILD_AND_RUNTIME.md) for build, launch, package verification, environment checks, and CI details.
+
+## For developers
+
+<details>
+<summary>Build, run, verify a package, check the environment, and run CI</summary>
+
+### Build Command
+
+Open `OpenVisionLab.LabelingStudio.sln` in Visual Studio, select `OpenVisionLab.LabelingStudio` as the startup project, and build for x64. The solution also includes the shared library projects.
+
+```powershell
+dotnet build .\OpenVisionLab.LabelingStudio.csproj -c Release -p:Platform=x64
+```
+
+### Running
+
+Debug build and launch:
+
+```powershell
+dotnet build .\OpenVisionLab.LabelingStudio.sln -c Debug -p:Platform=x64
+.\scripts\start-labeling-workbench.ps1 -AppMode Debug
+```
+
+Publish and run a local Release bundle:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\publish-win-x64.ps1 -Configuration Release
+.\scripts\start-labeling-workbench.ps1 -AppMode Publish
+```
+
+The versioned self-contained folder is `artifacts\publish\Release\win-x64\0.4.4`. Extract the portable ZIP into a new folder, verify the manifests, then run `OpenVisionLab.LabelingStudio.exe`. The release and publish manifests record source/build identity and the full payload's SHA-256 hashes.
+
+The example launcher resolves the Publish folder from the version in `Directory.Build.props`; no local configuration is needed for the default bundle. An explicit `-ConfigPath` takes precedence over `config/labeling-runtime.local.json`, which takes precedence over the example. See [launcher configuration](docs/tutorial/BUILD_AND_RUNTIME.md#launcher-configuration) for custom bundles.
+
+### Package verification
+
+Verify the existing package without changing it:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\publish-win-x64.ps1 -Configuration Release -ReleaseVersion 0.4.4 -VerifyOnly
+```
+
+### Environment check CLI
+
+```text
+OpenVisionLab.LabelingStudio.exe --environment-self-test --json
+```
+
+The read-only check runs before WPF startup and emits one JSON document. For PowerShell automation, use `Start-Process -Wait` with redirected standard output. Exit codes are `0` (ready), `2` (needs attention), `64` (invalid arguments), and `70` (check failed).
+
+### CI
+
+[Windows CI](.github/workflows/ci.yml) checks the README, builds the Windows application, and checks whitespace. See the workflow for the checks and artifacts included in each run. GPU-dependent validation requires the selected runtime, weights, and data.
+
+Sample information: `datasets/object-detection/coco128/coco128/README.txt`; [Python TCP protocol and mock-client examples](samples/python_protocol/README.md).
+
+</details>
+
+## Documentation
+
+- [User guide](docs/tutorial/README.md), [Visual guide](docs/tutorial/labeling-workbench-tutorial.html), [Single-file guide](docs/tutorial/labeling-workbench-tutorial-standalone.html)
+- [Build and runtime](docs/tutorial/BUILD_AND_RUNTIME.md), [Release notes](RELEASE_NOTES.md)
+
+## Known Limitations
+
+- There is no installer, code-signing package, or completed clean-PC install/upgrade/uninstall validation. Even a self-contained bundle needs compatible graphics; basic or virtualized displays can be incompatible.
+- Model runtimes and weights may need separate preparation and are not downloaded without approval. Model support requires a registered adapter with compatible class/split/output mapping.
+- Checks on a single PC do not show production accuracy, long-run reliability, or takt time. PatchCore is a pilot that learns from normal images only.
+- AI output remains a candidate. Confirmation and label saving are separate; automatic confirmation/save and text/voice-based labeling are unsupported.
+- Cloud accounts, team permissions, deployment pipelines, and camera/PLC control are outside the current product scope.
+
+See [Runtime limitations](docs/tutorial/BUILD_AND_RUNTIME.md#limitations) for archive, recovery, diagnostics, anomaly-ground-truth, and MobileSAM constraints.
+
+## Version
+
+Current version: **0.4.4** ([version source](Directory.Build.props)), [Release notes](RELEASE_NOTES.md)
+
+- **0.4.4** — Label import now saves the split chosen for imported images, so reopening the recipe no longer re-splits them by percentage. Adds results on real PCB images (VisA PCB4) to this README.
+- **0.4.3** — Trains several YOLOv8/YOLO11 models in one queue on the same data and evaluates them on the test split when the queue finishes. Model comparison shows the difference between A and B, AP by class, F1 and recall by confidence, and per-image agreement, and recommends a model among those evaluated on the same dataset version. The chosen model can be set as the inspection model on either engine, and Undo restores the previous model and engine. Verified on the synthetic washer dataset only.
+- **0.4.2** — Extends the edge inference runtime (`Runtime/Edge`) for operation: a staged frame pipeline, a fallback chain (TensorRT, OpenVINO on the CPU, then a rule check that holds parts for manual inspection), quality, GPU and alert monitoring, a release registry with shadow comparison, a promotion gate and rollback, case capture for relabeling, OPC UA certificate security, per-line parameter templates, and a native C++/CUDA path. The worker now reconnects when the requester link drops. Desktop application behavior and file formats are unchanged; the runtime is still tested only against a simulator and synthetic data.
+- **0.4.1** — Adds a separate edge inference runtime (`Runtime/Edge`). A prepared YOLO detection model is exported to ONNX and runs in a Linux/WSL2 GPU container with ONNX Runtime or TensorRT FP32, FP16, or INT8 engines. Verdicts are sent over Modbus TCP or OPC UA, and inspection latency p99 is shown in Prometheus and Grafana. Desktop application behavior and file formats are unchanged. The runtime has been tested only against a simulator; Machine Studio integration is not yet verified.
+- **0.4.0** — Opt-in TCP inbox for received-image label review, plus UI refinements
+
+## Part of OpenVisionLab
+
+| Project | What it does |
+| --- | --- |
+| [2D Workbench](https://github.com/Noah8218/OpenVisionLab) | Rule-based 2D inspection recipes |
+| [3D Studio](https://github.com/Noah8218/OpenVisionLab-3D-Studio) | 3D teaching, Thickness and Warpage |
+| [Labeling Studio](https://github.com/Noah8218/OpenVisionLab-Labeling-Studio) | Labeling, training and model comparison |
+| [Machine Studio](https://github.com/Noah8218/OpenVisionLab-Machine-Studio) | Machine simulation before hardware |
+| [Vision SDK](https://github.com/Noah8218/OpenVisionLab-Vision-SDK) | Shared C# inspection library |
+
+## License
+
+Distributed under the [MIT License](LICENSE). Preserve the copyright and license notices in [LICENSE](LICENSE), [NOTICE](NOTICE), and [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) when copying or distributing the software.
+
+Copyright (c) 2026 최노아 (Noah-Choi)
