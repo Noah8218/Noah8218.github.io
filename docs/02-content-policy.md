@@ -33,11 +33,12 @@
 - 사용자가 지정한 문구: About 인용문, Overview 목적 문단, Contact 큰 문구, 히어로 한국어 인사(상세: [07-copy-audit.md](07-copy-audit.md)의 A2, B, E1, H1).
 - 영어 원문을 쓸 때는 문장을 줄이거나 다듬어도 안 된다. 고치려면 사용자 승인을 받고 `data-ed`를 붙이고 `07-copy-audit.md`에 전/후를 남긴다.
 - README 문장이 영어 편집 눈으로 어색해도(예: 릴리스 노트의 명령형·과거형·명사구 혼재) **출처 규칙이 우선**한다. 고칠지는 사용자가 정한다.
+- 원칙 구간(`#principles`)의 여섯 줄과 설명 문단 2개(`.pr-note`)는 `docs/sources/README_Noah8218.md`의 `Engineering Principles` 상세 블록 영어 원문 그대로다(`data-ed` 없음). 한국어는 README에 원문이 없어 AI 번역이며 `data-ko-src="tr"`을 붙였다(사용자 검토 전).
 - 허용 라벨(작성 시점): `Skip to content`, `EN`, `KO`, `Skills`, `Contact`, `Hello, I'm`, `Scroll`, `open-source projects`, `Technologies`, `Get it`, 그리고 Contact 큰 문구 한 문장. 최신 목록은 `tools/allowed_labels.txt`.
 
 ### 금지 표현 (AI 티)
 
-- **영어**: 홍보·과장 어휘(ecosystem, seamless, robust, leverage 등), 줄표(em dash, 제목 포함), "not X, but Y" 부정 병렬, 추상명사 나열, 한 문단 안의 동의어 순환, 빈 틀 표현("I prefer engineering that …"). `Ecosystem`은 `Overview`로 이미 바꿨다.
+- **영어**: 홍보·과장 어휘(ecosystem, seamless, robust, leverage 등), 줄표(em dash, 제목 포함), "not X, but Y" 부정 병렬, 추상명사 나열, 한 문단 안의 동의어 순환, 빈 틀 표현("I prefer engineering that …"; 단 원칙 구간의 README 원문 문단은 출처 규칙이 우선하므로 그대로 쓴다). `Ecosystem`은 `Overview`로 이미 바꿨다.
 - **한국어**: humanizer-ko의 37개 패턴(번역투, 불필요한 피동·명사형, 상투적 연결어, 영어 직역). 단 장비 현업어(티칭, 양산 샘플, 광학계 등)와 도구 이름은 고치지 않는다.
 - **과교정 금지**: 사람이 쓴 문장을 일부러 어색하게 바꾸지 않는다. 수치, 제품명, 주장의 세기는 불변이다. 방법과 1·2차 수정 기록은 [07-copy-audit.md](07-copy-audit.md).
 

@@ -230,6 +230,9 @@ html[lang=ko] .cue,html[lang=ko] .ttl,html[lang=ko] .ttl.sm,html[lang=ko] .sub,h
 .pr li{max-width:28em;font-size:clamp(1.3rem,min(3.1vw,calc(var(--vh)*.05)),2.7rem);font-weight:700;letter-spacing:-.03em;line-height:1.25;opacity:calc(.5 + .5*var(--k,1));transition:color .35s var(--ease)}
 .pr li+li{margin-top:.5em}
 .pr li.cur{color:var(--accent)}
+/* 설명 문단(프로필 README 원문). 핀(.pr-pin) 밖, #pr-wrap 뒤의 일반 흐름 블록이다. 핀 안에 두면 낮은 화면에서 제목이 내비에 가려진다 */
+.pr-note{padding:clamp(24px,4vw,48px) 0 clamp(48px,7vw,88px);max-width:42em;color:var(--muted);font-size:clamp(.95rem,1.3vw,1.1rem);line-height:1.6}
+.pr-note p+p{margin-top:.8em}
 
 /* releases */
 .lat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:clamp(56px,8vw,96px)}

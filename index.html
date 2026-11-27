@@ -462,15 +462,18 @@ var l=q.get('lang')||s.getItem('lang');d.lang=l==='ko'?'ko':'en';})();
       <div class="wrap">
         <h2 id="pr-h" class="ttl sm"><span class="u in" data-ko="엔지니어링 원칙" data-ko-src="tr">Engineering Principles</span></h2>
         <ol class="pr">
-          <li data-ko="Recipe를 불러올 때는 검사 실행 없이 설정만 복원합니다.">Loading a Recipe restores its settings without running the inspection.</li>
-          <li data-ko="저장과 실행은 별도 동작입니다.">Saving and running are separate actions.</li>
-          <li data-ko="프로젝트 열기, 장치 선택, 결과 탐색만으로 장비가 실행되지는 않습니다.">Loading a project, selecting a device or browsing results does not run the machine.</li>
-          <li data-ko="실행 오류는 NG와 구분합니다.">Execution errors are reported separately from NG.</li>
-          <li data-ko="입력이나 파라미터가 바뀌면 보관된 결과는 이전 결과로 표시합니다. 현재 설정의 결과를 보려면 다시 실행합니다.">After input or parameter changes, retained results are marked as previous results; run again to update them.</li>
-          <li data-ko="AI 결과는 검토할 후보입니다.">AI results are candidates for review.</li>
+          <li data-ko="더 일찍 만듭니다." data-ko-src="tr">Build earlier.</li>
+          <li data-ko="검증을 명시적으로 합니다." data-ko-src="tr">Validate explicitly.</li>
+          <li data-ko="상태를 결정적으로 유지합니다." data-ko-src="tr">Keep state deterministic.</li>
+          <li data-ko="안전하게 실패합니다." data-ko-src="tr">Fail safely.</li>
+          <li data-ko="증거를 보존합니다." data-ko-src="tr">Preserve evidence.</li>
+          <li data-ko="문제를 재현할 수 있게 만듭니다." data-ko-src="tr">Make problems reproducible.</li>
         </ol>
       </div>
     </div>
+  </div>
+  <div class="wrap">
+    <div class="pr-note"><p data-ko="새로움만을 위해 복잡도를 더하기보다, 안정성, 추적성, 복구, 재현성을 높이는 엔지니어링을 선호합니다." data-ko-src="tr">I prefer engineering that improves stability, traceability, recovery and reproducibility over adding complexity only for novelty.</p><p data-ko="머신비전 소프트웨어에서는 알고리즘이 한 번 올바른 결과를 내는 것만으로는 충분하지 않습니다. 시스템 전체가 올바른 이미지를 취득하고, 올바른 시점에 올바른 검사를 실행하고, 결과를 보존하고, 실패에서 복구하고, 나중에 무슨 일이 있었는지 설명할 근거를 충분히 제공해야 합니다." data-ko-src="tr">For machine-vision software, an algorithm producing the right result once is not enough. The complete system must acquire the correct image, execute the correct inspection at the correct time, preserve the result, recover from failure, and provide enough evidence to explain what happened later.</p></div>
   </div>
 </section>
 

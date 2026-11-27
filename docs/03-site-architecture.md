@@ -19,7 +19,7 @@
 | `#projects` | `section.sec` | 프로젝트 6개 | `article.row` 6개(아래 3절). 순서: 2D Workbench, Labeling Studio, 3D Studio, Machine Studio, Vision SDK, Raw Buffer Visualizer |
 | `#ecosystem` | `section.sec` | 구성도(메뉴 이름 Overview/구성도) | `.eco#eco`: `svg.eco-svg`(`path.e.s` 실선, `path.e.x` 점선), 노드 `.nd`(`#n-concept #n-machine #n-inputs #n-sdk #n-2d #n-3d #n-lab #n-results #n-decision`), `.legend`, `.purpose` |
 | `#skills` | `section.sec` | 기술 4카드 + 칩 | `.skills > article.sk.reveal` 4개, `.kw > .chips` |
-| `#principles` | `section.pr-sec` | 엔지니어링 원칙 6줄(스크롤 고정) | `.pr-wrap#pr-wrap`(높이 `calc(var(--vh)*4)`) > `.pr-pin`(sticky) > `ol.pr > li` 6개. 내비에 Principles 링크가 있다(작성 말미 스냅샷 기준) |
+| `#principles` | `section.pr-sec` | 엔지니어링 원칙 6줄(스크롤 고정) + 설명 문단 2개 | `.pr-wrap#pr-wrap`(높이 `calc(var(--vh)*4)`) > `.pr-pin`(sticky) > `.wrap` > 제목 + `ol.pr > li` 6개. 설명 문단은 핀(`.pr-pin`) 밖, `#pr-wrap` 뒤의 일반 흐름 블록 `.wrap > div.pr-note > p` 2개다(낮은 화면에서 핀 안에 두면 제목이 내비에 가려져 밖으로 뺐다. 스크롤 연동 없음). 내용은 프로필 README의 Engineering Principles 원문. 내비에 Principles 링크가 있다(작성 말미 스냅샷 기준) |
 | `#releases` | `section.sec` | 최신·이력·로드맵 | `ul.lat`(Latest 3장), `ol.tl#tl`(타임라인 `li.ti`: `time`, `i.dot`, `.tc`), `.road > dl`(Next, Planned) |
 | `#contact` | `section.sec.contact` | 연락 | `.big`, `.btns`, `.mail`, `.aside` |
 | (푸터) | `footer.foot` | 이미지 출처·저작권 | `.credit`(VisA CC BY 4.0 링크), `Copyright (c) 2026 Noah Choi` |
@@ -76,7 +76,7 @@ article.row
 
 ## 5. CSS 구조와 토큰
 
-`css/style.css`는 위에서 아래로: 토큰(`:root`, `[data-theme]`) → 리셋 → `.reveal` → 내비 → 히어로 → 섹션 공통(`.sec`, `.ttl`, `.u`) → About → Projects(`.row`, `.frame`, `.stage`, `.m`, `.caps`, `.thumbs`, `.code`) → 구성도(`.eco`, `.nd`, `.e`) → Skills → Principles(`.pr-wrap`) → Releases(`.lat`, `.tl`, `.road`) → Contact → `html.still` → 반응형.
+`css/style.css`는 위에서 아래로: 토큰(`:root`, `[data-theme]`) → 리셋 → `.reveal` → 내비 → 히어로 → 섹션 공통(`.sec`, `.ttl`, `.u`) → About → Projects(`.row`, `.frame`, `.stage`, `.m`, `.caps`, `.thumbs`, `.code`) → 구성도(`.eco`, `.nd`, `.e`) → Skills → Principles(`.pr-wrap`, `.pr-note`) → Releases(`.lat`, `.tl`, `.road`) → Contact → `html.still` → 반응형.
 
 **`:root` 공통 토큰**: `--ease`, `--vh`(`100svh`를 지원하면 `100svh`), `--pad`(`clamp(20px,5vw,64px)`), `--wrap`(1200px), `--font`, `--mono`.
 
