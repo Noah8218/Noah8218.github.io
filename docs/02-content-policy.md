@@ -33,7 +33,7 @@
 - 사용자가 지정한 문구: About 인용문, Overview 목적 문단, Contact 큰 문구, 히어로 한국어 인사(상세: [07-copy-audit.md](07-copy-audit.md)의 A2, B, E1, H1).
 - 영어 원문을 쓸 때는 문장을 줄이거나 다듬어도 안 된다. 고치려면 사용자 승인을 받고 `data-ed`를 붙이고 `07-copy-audit.md`에 전/후를 남긴다.
 - README 문장이 영어 편집 눈으로 어색해도(예: 릴리스 노트의 명령형·과거형·명사구 혼재) **출처 규칙이 우선**한다. 고칠지는 사용자가 정한다.
-- 원칙 구간(`#principles`)의 여섯 줄과 설명 문단 2개(`.pr-note`)는 `docs/sources/README_Noah8218.md`의 `Engineering Principles` 상세 블록 영어 원문 그대로다(`data-ed` 없음). 한국어는 README에 원문이 없어 AI 번역이며 `data-ko-src="tr"`을 붙였다(사용자 검토 전).
+- 원칙 구간(`#principles`)의 여섯 줄과 설명 문단 2개(`.pr-note`)는 `docs/sources/README_Noah8218.md`의 `Engineering Principles` 상세 블록 영어 원문 그대로다(`data-ed` 없음). 한국어 출처는 둘로 나뉜다. 설명 문단 2개의 한국어는 사용자가 직접 준 문구 그대로이고 `data-ko-src`가 없으며, 말뭉치 파일 `docs/sources/README_ko_Noah8218_principles_user.md`가 원문이다. 여섯 줄의 한국어는 README에 한국어 원문이 없어 AI가 제안한 짧은 구호체이며 `data-ko-src="tr"`을 붙였다(사용자 검토 전).
 - 허용 라벨(작성 시점): `Skip to content`, `EN`, `KO`, `Skills`, `Contact`, `Hello, I'm`, `Scroll`, `open-source projects`, `Technologies`, `Get it`, 그리고 Contact 큰 문구 한 문장. 최신 목록은 `tools/allowed_labels.txt`.
 
 ### 금지 표현 (AI 티)
