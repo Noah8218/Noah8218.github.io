@@ -86,7 +86,7 @@ python tools/perf_site.py --case desktop         # 성능 재측정(선택): 코
 
 ## 6. 배포와 커밋
 
-- 저장소 이름은 `Noah8218.github.io`이고 `main` 푸시가 곧 배포다(Pages 소스가 `main` 루트라는 전제. 저장소 Settings > Pages에서 확인, **미확인**). 푸시 후 사이트를 열어 EN·KO·라이트·다크를 확인한다.
+- 저장소 이름은 `Noah8218.github.io`이고 `main` 푸시가 곧 배포다(Pages 소스는 `main` 루트이고 legacy 빌드다. 2026-11-27 저장소 생성 때 자동으로 켜졌고 `gh api repos/Noah8218/Noah8218.github.io/pages`로 확인했다). 첫 배포 확인: 주소 200 응답, 페이지가 참조하는 파일 35개 모두 200, 콘솔 오류 없음, EN↔KO·라이트↔다크 전환 동작. 푸시 후 빌드에 1분 안팎 걸리고 그동안 404가 나올 수 있다. 푸시 후 사이트를 열어 EN·KO·라이트·다크를 확인한다.
 - **공개 저장소이므로 커밋 이메일이 노출된다.** `git config user.email "<숫자ID>+<GitHub 사용자명>@users.noreply.github.com"` 형식의 GitHub noreply 주소를 쓴다(실제 주소는 GitHub 설정의 이메일 화면에서 확인). 이미 푸시한 커밋의 이메일은 되돌리기 어렵다.
 - 커밋 전에 `python tools/scan_public.py`와 `check_site.py`를 통과시킨다. 한 커밋에는 한 목적만 둔다.
 
